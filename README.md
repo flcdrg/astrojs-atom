@@ -1,6 +1,6 @@
 # @astrojs/rss 📖
 
-This package brings fast RSS feed generation to blogs and other content sites built with [Astro](https://astro.build/). For more information about RSS feeds in general, see [aboutfeeds.com](https://aboutfeeds.com/).
+Fork of @astrojs/rss that implements the [Atom feed format](https://validator.w3.org/feed/docs/atom.html).
 
 ## Installation and use
 
