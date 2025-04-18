@@ -14,9 +14,6 @@ importers:
       fast-xml-parser:
         specifier: ^5.2.0
         version: 5.2.0
-      kleur:
-        specifier: ^4.1.5
-        version: 4.1.5
     devDependencies:
       '@types/xml2js':
         specifier: ^0.4.14
