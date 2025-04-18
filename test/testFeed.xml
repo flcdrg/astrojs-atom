@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Test Feed</title>
+  <subtitle>Test Description</subtitle>
+  <id>https://example.com/</id>
+  <link href="https://example.com/"/>
+  <updated>2025-04-18T10:38:49.952Z</updated>
+  <entry>
+    <title>Test Item</title>
+    <id>https://example.com/#entry-rkm4rgqautp</id>
+    <updated>2025-04-18T10:38:49.952Z</updated>
+    <summary>Test Description</summary>
+    <category term="test"/>
+    <category term="example"/>
+  </entry>
+</feed>

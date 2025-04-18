@@ -1,8 +1,8 @@
 import { z } from 'astro/zod';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import { yellow } from 'kleur/colors';
-import { atomSchema } from './schema.js';
-import { createCanonicalURL, errorMap, isValidURL } from './util.js';
+import { atomSchema } from './schema';
+import { createCanonicalURL, errorMap, isValidURL } from './util';
 
 export { atomSchema };
 
@@ -166,6 +166,7 @@ async function generateAtom(atomOptions: ValidatedAtomOptions): Promise<string> 
 		ignoreAttributes: false,
 		suppressEmptyNode: true,
 		suppressBooleanAttributes: false,
+		format: true
 	};
 	const parser = new XMLParser(xmlOptions);
 	const root: any = { '?xml': { '@_version': '1.0', '@_encoding': 'UTF-8' } };
