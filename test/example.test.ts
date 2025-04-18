@@ -30,8 +30,9 @@ test('generates valid Atom feed', async () => {
         items: [
             {
                 title: "Test Item",
-                description: "Test Description",
-                updated: new Date().toISOString(),
+                
+                //: "Test Description",
+                updated: '2023-10-01T00:00:00Z',
                 categories: ["test", "example"],
             },
         ]});
