@@ -1,112 +1,112 @@
 import { z } from 'astro/zod';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import { yellow } from 'kleur/colors';
-import { rssSchema } from './schema.js';
+import { atomSchema } from './schema.js';
 import { createCanonicalURL, errorMap, isValidURL } from './util.js';
 
-export { rssSchema };
+export { atomSchema };
 
-export type RSSOptions = {
-	/** Title of the RSS Feed */
-	title: z.infer<typeof rssOptionsValidator>['title'];
-	/** Description of the RSS Feed */
-	description: z.infer<typeof rssOptionsValidator>['description'];
+export type AtomOptions = {
+	/** Title of the Atom Feed */
+	title: z.infer<typeof atomOptionsValidator>['title'];
+	/** Description of the Atom Feed */
+	description: z.infer<typeof atomOptionsValidator>['description'];
 	/**
-	 * Specify the base URL to use for RSS feed links.
+	 * Specify the base URL to use for Atom feed links.
 	 * We recommend using the [endpoint context object](https://docs.astro.build/en/reference/api-reference/#contextsite),
 	 * which includes the `site` configured in your project's `astro.config.*`
 	 */
-	site: z.infer<typeof rssOptionsValidator>['site'] | URL;
-	/** List of RSS feed items to render. */
-	items: RSSFeedItem[] | GlobResult;
+	site: z.infer<typeof atomOptionsValidator>['site'] | URL;
+	/** List of Atom feed items to render. */
+	items: AtomFeedItem[] | GlobResult;
 	/** Specify arbitrary metadata on opening <xml> tag */
-	xmlns?: z.infer<typeof rssOptionsValidator>['xmlns'];
+	xmlns?: z.infer<typeof atomOptionsValidator>['xmlns'];
 	/**
 	 * Specifies a local custom XSL stylesheet. Ex. '/public/custom-feed.xsl'
 	 */
-	stylesheet?: z.infer<typeof rssOptionsValidator>['stylesheet'];
+	stylesheet?: z.infer<typeof atomOptionsValidator>['stylesheet'];
 	/** Specify custom data in opening of file */
-	customData?: z.infer<typeof rssOptionsValidator>['customData'];
-	trailingSlash?: z.infer<typeof rssOptionsValidator>['trailingSlash'];
+	customData?: z.infer<typeof atomOptionsValidator>['customData'];
+	trailingSlash?: z.infer<typeof atomOptionsValidator>['trailingSlash'];
 };
 
-export type RSSFeedItem = {
+export type AtomFeedItem = {
 	/** Link to item */
-	link?: z.infer<typeof rssSchema>['link'];
+	link?: z.infer<typeof atomSchema>['link'];
 	/** Full content of the item. Should be valid HTML */
-	content?: z.infer<typeof rssSchema>['content'];
+	content?: z.infer<typeof atomSchema>['content'];
 	/** Title of item */
-	title?: z.infer<typeof rssSchema>['title'];
-	/** Publication date of item */
-	pubDate?: z.infer<typeof rssSchema>['pubDate'];
+	title?: z.infer<typeof atomSchema>['title'];
+	/** Indicates the last time the entry was modified in a significant way */
+	updated?: z.infer<typeof atomSchema>['updated'];
 	/** Item description */
-	description?: z.infer<typeof rssSchema>['description'];
+	description?: z.infer<typeof atomSchema>['description'];
 	/** Append some other XML-valid data to this item */
-	customData?: z.infer<typeof rssSchema>['customData'];
+	customData?: z.infer<typeof atomSchema>['customData'];
 	/** Categories or tags related to the item */
-	categories?: z.infer<typeof rssSchema>['categories'];
+	categories?: z.infer<typeof atomSchema>['categories'];
 	/** The item author's email address */
-	author?: z.infer<typeof rssSchema>['author'];
+	author?: z.infer<typeof atomSchema>['author'];
 	/** A URL of a page for comments related to the item */
-	commentsUrl?: z.infer<typeof rssSchema>['commentsUrl'];
-	/** The RSS channel that the item came from */
-	source?: z.infer<typeof rssSchema>['source'];
+	commentsUrl?: z.infer<typeof atomSchema>['commentsUrl'];
+	/** The Atom channel that the item came from */
+	source?: z.infer<typeof atomSchema>['source'];
 	/** A media object that belongs to the item */
-	enclosure?: z.infer<typeof rssSchema>['enclosure'];
+	enclosure?: z.infer<typeof atomSchema>['enclosure'];
 };
 
-type ValidatedRSSFeedItem = z.infer<typeof rssSchema>;
-type ValidatedRSSOptions = z.infer<typeof rssOptionsValidator>;
+type ValidatedAtomFeedItem = z.infer<typeof atomSchema>;
+type ValidatedAtomOptions = z.infer<typeof atomOptionsValidator>;
 type GlobResult = z.infer<typeof globResultValidator>;
 
 const globResultValidator = z.record(z.function().returns(z.promise(z.any())));
 
-const rssOptionsValidator = z.object({
+const atomOptionsValidator = z.object({
 	title: z.string(),
 	description: z.string(),
 	site: z.preprocess((url) => (url instanceof URL ? url.href : url), z.string().url()),
 	items: z
-		.array(rssSchema)
-		.or(globResultValidator)
-		.transform((items) => {
-			if (!Array.isArray(items)) {
-				console.warn(
-					yellow(
-						'[RSS] Passing a glob result directly has been deprecated. Please migrate to the `pagesGlobToRssItems()` helper: https://docs.astro.build/en/guides/rss/',
-					),
-				);
-				return pagesGlobToRssItems(items);
-			}
-			return items;
-		}),
+			.array(atomSchema)
+			.or(globResultValidator)
+			.transform((items) => {
+				if (!Array.isArray(items)) {
+					console.warn(
+						yellow(
+							'[Atom] Passing a glob result directly has been deprecated. Please migrate to the `pagesGlobToAtomItems()` helper: https://docs.astro.build/en/guides/rss/',
+						),
+					);
+					return pagesGlobToAtomItems(items);
+				}
+				return items;
+			}),
 	xmlns: z.record(z.string()).optional(),
 	stylesheet: z.union([z.string(), z.boolean()]).optional(),
 	customData: z.string().optional(),
 	trailingSlash: z.boolean().default(true),
 });
 
-export default async function getRssResponse(rssOptions: RSSOptions): Promise<Response> {
-	const rssString = await getRssString(rssOptions);
-	return new Response(rssString, {
+export default async function getAtomResponse(atomOptions: AtomOptions): Promise<Response> {
+	const atomString = await getAtomString(atomOptions);
+	return new Response(atomString, {
 		headers: {
 			'Content-Type': 'application/xml',
 		},
 	});
 }
 
-export async function getRssString(rssOptions: RSSOptions): Promise<string> {
-	const validatedRssOptions = await validateRssOptions(rssOptions);
-	return await generateRSS(validatedRssOptions);
+export async function getAtomString(atomOptions: AtomOptions): Promise<string> {
+	const validatedAtomOptions = await validateAtomOptions(atomOptions);
+	return await generateAtom(validatedAtomOptions);
 }
 
-async function validateRssOptions(rssOptions: RSSOptions) {
-	const parsedResult = await rssOptionsValidator.safeParseAsync(rssOptions, { errorMap });
+async function validateAtomOptions(atomOptions: AtomOptions) {
+	const parsedResult = await atomOptionsValidator.safeParseAsync(atomOptions, { errorMap });
 	if (parsedResult.success) {
 		return parsedResult.data;
 	}
 	const formattedError = new Error(
 		[
-			`[RSS] Invalid or missing options:`,
+			`[Atom] Invalid or missing options:`,
 			...parsedResult.error.errors.map((zodError) => {
 				const path = zodError.path.join('.');
 				const message = `${zodError.message} (${path})`;
@@ -127,16 +127,16 @@ async function validateRssOptions(rssOptions: RSSOptions) {
 	throw formattedError;
 }
 
-export function pagesGlobToRssItems(items: GlobResult): Promise<ValidatedRSSFeedItem[]> {
+export function pagesGlobToAtomItems(items: GlobResult): Promise<ValidatedAtomFeedItem[]> {
 	return Promise.all(
 		Object.entries(items).map(async ([filePath, getInfo]) => {
 			const { url, frontmatter } = await getInfo();
 			if (url === undefined || url === null) {
 				throw new Error(
-					`[RSS] You can only glob entries within 'src/pages/' when passing import.meta.glob() directly. Consider mapping the result to an array of RSSFeedItems. See the RSS docs for usage examples: https://docs.astro.build/en/guides/rss/#2-list-of-rss-feed-objects`,
+					`[Atom] You can only glob entries within 'src/pages/' when passing import.meta.glob() directly. Consider mapping the result to an array of AtomFeedItems. See the Atom docs for usage examples: https://docs.astro.build/en/guides/rss/#2-list-of-rss-feed-objects`,
 				);
 			}
-			const parsedResult = rssSchema
+			const parsedResult = atomSchema
 				.refine((val) => val.title || val.description, {
 					message: 'At least title or description must be provided.',
 					path: ['title', 'description'],
@@ -148,7 +148,7 @@ export function pagesGlobToRssItems(items: GlobResult): Promise<ValidatedRSSFeed
 			}
 			const formattedError = new Error(
 				[
-					`[RSS] ${filePath} has invalid or missing frontmatter.\nFix the following properties:`,
+					`[Atom] ${filePath} has invalid or missing frontmatter.\nFix the following properties:`,
 					...parsedResult.error.errors.map((zodError) => zodError.message),
 				].join('\n'),
 			);
@@ -158,109 +158,81 @@ export function pagesGlobToRssItems(items: GlobResult): Promise<ValidatedRSSFeed
 	);
 }
 
-/** Generate RSS 2.0 feed */
-async function generateRSS(rssOptions: ValidatedRSSOptions): Promise<string> {
-	const { items, site } = rssOptions;
+/** Generate Atom 1.0 feed */
+async function generateAtom(atomOptions: ValidatedAtomOptions): Promise<string> {
+	const { items, site } = atomOptions;
 
 	const xmlOptions = {
 		ignoreAttributes: false,
-		// Avoid correcting self-closing tags to standard tags
-		// when using `customData`
-		// https://github.com/withastro/astro/issues/5794
 		suppressEmptyNode: true,
 		suppressBooleanAttributes: false,
 	};
 	const parser = new XMLParser(xmlOptions);
 	const root: any = { '?xml': { '@_version': '1.0', '@_encoding': 'UTF-8' } };
-	if (typeof rssOptions.stylesheet === 'string') {
-		const isXSL = /\.xsl$/i.test(rssOptions.stylesheet);
+	if (typeof atomOptions.stylesheet === 'string') {
+		const isXSL = /.xsl$/i.test(atomOptions.stylesheet);
 		root['?xml-stylesheet'] = {
-			'@_href': rssOptions.stylesheet,
+			'@_href': atomOptions.stylesheet,
 			...(isXSL && { '@_type': 'text/xsl' }),
 		};
 	}
-	root.rss = { '@_version': '2.0' };
-	if (items.find((result) => result.content)) {
-		// the namespace to be added to the xmlns:content attribute to enable the <content> RSS feature
-		const XMLContentNamespace = 'http://purl.org/rss/1.0/modules/content/';
-		root.rss['@_xmlns:content'] = XMLContentNamespace;
-		// Ensure that the user hasn't tried to manually include the necessary namespace themselves
-		if (rssOptions.xmlns?.content && rssOptions.xmlns.content === XMLContentNamespace) {
-			delete rssOptions.xmlns.content;
+
+	// Atom root element and namespace
+	root.feed = { '@_xmlns': 'http://www.w3.org/2005/Atom' };
+
+	// Additional namespaces
+	if (atomOptions.xmlns) {
+		for (const [k, v] of Object.entries(atomOptions.xmlns)) {
+			root.feed[`@_xmlns:${k}`] = v;
 		}
 	}
 
-	// xmlns
-	if (rssOptions.xmlns) {
-		for (const [k, v] of Object.entries(rssOptions.xmlns)) {
-			root.rss[`@_xmlns:${k}`] = v;
-		}
-	}
+	// Feed metadata
+	root.feed.title = atomOptions.title;
+	root.feed.subtitle = atomOptions.description;
+	root.feed.id = createCanonicalURL(site, atomOptions.trailingSlash, undefined);
+	root.feed.link = { '@_href': createCanonicalURL(site, atomOptions.trailingSlash, undefined) };
 
-	// title, description, customData
-	root.rss.channel = {
-		title: rssOptions.title,
-		description: rssOptions.description,
-		link: createCanonicalURL(site, rssOptions.trailingSlash, undefined),
-	};
-	if (typeof rssOptions.customData === 'string')
+	// Updated: latest pubDate or now
+	const latestDate = items
+		.map((item) => item.updated && new Date(item.updated))
+		.filter((d) => d instanceof Date && !isNaN(d.getTime()))
+		.sort((a, b) => (b && a ? b.getTime() - a.getTime() : 0))[0];
+	root.feed.updated = (latestDate || new Date()).toISOString();
+
+	// Custom data (inserted as raw XML)
+	if (typeof atomOptions.customData === 'string') {
 		Object.assign(
-			root.rss.channel,
-			parser.parse(`<channel>${rssOptions.customData}</channel>`).channel,
+			root.feed,
+			parser.parse(`<feed>${atomOptions.customData}</feed>`).feed,
 		);
-	// items
-	root.rss.channel.item = items.map((result) => {
-		const item: Record<string, unknown> = {};
+	}
 
-		if (result.title) {
-			item.title = result.title;
-		}
-		if (typeof result.link === 'string') {
-			// If the item's link is already a valid URL, don't mess with it.
-			const itemLink = isValidURL(result.link)
+	// Entries
+	root.feed.entry = items.map((result) => {
+		const entry: Record<string, unknown> = {};
+		if (result.title) entry.title = result.title;
+		if (result.link) {
+			const entryLink = isValidURL(result.link)
 				? result.link
-				: createCanonicalURL(result.link, rssOptions.trailingSlash, site);
-			item.link = itemLink;
-			item.guid = { '#text': itemLink, '@_isPermaLink': 'true' };
+				: createCanonicalURL(result.link, atomOptions.trailingSlash, site);
+			entry.link = { '@_href': entryLink };
+			entry.id = entryLink;
+		} else {
+			// Fallback: use feed id + index
+			entry.id = root.feed.id + '#entry-' + Math.random().toString(36).slice(2);
 		}
-		if (result.description) {
-			item.description = result.description;
-		}
-		if (result.pubDate) {
-			item.pubDate = result.pubDate.toUTCString();
-		}
-		// include the full content of the post if the user supplies it
-		if (typeof result.content === 'string') {
-			item['content:encoded'] = result.content;
+		if (result.updated) entry.updated = new Date(result.updated).toISOString();
+		if (result.description) entry.summary = result.description;
+		if (result.content) entry.content = { '@_type': 'html', '#text': result.content };
+		if (result.author) entry.author = { name: result.author };
+		if (Array.isArray(result.categories)) {
+			entry.category = result.categories.map((cat) => ({ '@_term': cat }));
 		}
 		if (typeof result.customData === 'string') {
-			Object.assign(item, parser.parse(`<item>${result.customData}</item>`).item);
+			Object.assign(entry, parser.parse(`<entry>${result.customData}</entry>`).entry);
 		}
-		if (Array.isArray(result.categories)) {
-			item.category = result.categories;
-		}
-		if (typeof result.author === 'string') {
-			item.author = result.author;
-		}
-		if (typeof result.commentsUrl === 'string') {
-			item.comments = isValidURL(result.commentsUrl)
-				? result.commentsUrl
-				: createCanonicalURL(result.commentsUrl, rssOptions.trailingSlash, site);
-		}
-		if (result.source) {
-			item.source = parser.parse(
-				`<source url="${result.source.url}">${result.source.title}</source>`,
-			).source;
-		}
-		if (result.enclosure) {
-			const enclosureURL = isValidURL(result.enclosure.url)
-				? result.enclosure.url
-				: createCanonicalURL(result.enclosure.url, rssOptions.trailingSlash, site);
-			item.enclosure = parser.parse(
-				`<enclosure url="${enclosureURL}" length="${result.enclosure.length}" type="${result.enclosure.type}"/>`,
-			).enclosure;
-		}
-		return item;
+		return entry;
 	});
 
 	return new XMLBuilder(xmlOptions).build(root);

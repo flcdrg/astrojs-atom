@@ -1,13 +1,9 @@
 import { z } from 'astro/zod';
 
-export const rssSchema = z.object({
+export const atomSchema = z.object({
 	title: z.string().optional(),
 	description: z.string().optional(),
-	pubDate: z
-		.union([z.string(), z.number(), z.date()])
-		.transform((value) => new Date(value))
-		.refine((value) => !isNaN(value.getTime()))
-		.optional(),
+	updated: z.string(),
 	customData: z.string().optional(),
 	categories: z.array(z.string()).optional(),
 	author: z.string().optional(),
