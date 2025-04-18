@@ -1,18 +1,11 @@
 {
-  "name": "@astrojs/rss",
-  "description": "Add RSS feeds to your Astro projects",
-  "version": "4.0.11",
+  "name": "astrojs-atom",
+  "description": "Add Atom feeds to your Astro projects",
+  "version": "1.0.0",
   "type": "module",
   "types": "./dist/index.d.ts",
-  "author": "withastro",
+  "author": "flcdrg",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/withastro/astro.git",
-    "directory": "packages/astro-rss"
-  },
-  "bugs": "https://github.com/withastro/astro/issues",
-  "homepage": "https://astro.build",
   "exports": {
     ".": "./dist/index.js",
     "./package.json": "./package.json"
@@ -21,10 +14,16 @@
     "dist"
   ],
   "scripts": {
+    "build": "pnpm tsc",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "test": "vitest",
+    "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
     "@types/xml2js": "^0.4.14",
-    "xml2js": "0.6.2"
+    "xml2js": "0.6.2",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "astro": "^5.7.3",

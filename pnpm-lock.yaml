@@ -21,6 +21,9 @@ importers:
       '@types/xml2js':
         specifier: ^0.4.14
         version: 0.4.14
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
       xml2js:
         specifier: 0.6.2
         version: 0.6.2
