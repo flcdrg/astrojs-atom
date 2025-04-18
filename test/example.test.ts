@@ -19,5 +19,5 @@ test('generates valid Atom feed', async () => {
             },
         ]});
     
-    expect(result).toMatchFileSnapshot("testFeed.xml");
+    await expect(result).toMatchFileSnapshot("testFeed.xml");
 });
