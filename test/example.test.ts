@@ -1,39 +1,21 @@
-import { get } from "http";
-import { AtomFeedItem, atomSchema, getAtomString } from "../src/index";
+import { atomSchema, getAtomString } from "../src/index";
 import { expect, test } from "vitest";
-
-export function sum(a, b) {
-    return a + b
-  }
-
-test('adds 1 + 2 to equal 3', () => {
-    expect(sum(1, 2)).toBe(3)
-  });
-
-test('can parse item', () => {
-    const atomItem = {
-        title: "Test Title",
-        description: "Test Description",
-        updated: new Date().toISOString(),
-        categories: ["test", "example"],
-
-    };
-    const result = atomSchema.safeParse(atomItem);
-    expect(result.success).toBe(true);
-});
 
 test('generates valid Atom feed', async () => {
     const result = await getAtomString({
         title: "Test Feed",
-        description: "Test Description",
-        site: "https://example.com",
-        items: [
+        subtitle: "Test Description",
+        id: "https://example.com/",
+        updated: '2023-10-01T00:00:00Z',
+        author: [{ name: "Test Author", email: "test@example.com" }],
+        link: [{ href: "https://example.com/", rel: "self" }],
+        entry: [
             {
                 title: "Test Item",
-                
-                //: "Test Description",
+                id: "https://example.com/item",
                 updated: '2023-10-01T00:00:00Z',
-                categories: ["test", "example"],
+                content: "This is a test item.",
+                
             },
         ]});
     

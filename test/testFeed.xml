@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Test Feed</title>
-  <subtitle>Test Description</subtitle>
   <id>https://example.com/</id>
-  <link href="https://example.com/"/>
-  <updated>2023-10-01T00:00:00.000Z</updated>
+  <title>Test Feed</title>
+  <updated>2023-10-01T00:00:00Z</updated>
+  <subtitle>Test Description</subtitle>
+  <author>
+    <name>Test Author</name>
+    <email>test@example.com</email>
+  </author>
+  <link href="https://example.com/" rel="self"/>
   <entry>
+    <id>https://example.com/item</id>
     <title>Test Item</title>
-    <id>https://example.com/#entry-pdccwf9io2l</id>
-    <updated>2023-10-01T00:00:00.000Z</updated>
-    <category term="test"/>
-    <category term="example"/>
+    <updated>2023-10-01T00:00:00Z</updated>
+    <content>This is a test item.</content>
   </entry>
 </feed>

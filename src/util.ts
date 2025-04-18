@@ -1,10 +1,10 @@
 import type { z } from 'astro/zod';
-import type { AtomOptions } from './index.js';
+import type { AtomFeedOptions } from './index.js';
 
 /** Normalize URL to its canonical form */
 export function createCanonicalURL(
 	url: string,
-	trailingSlash?: AtomOptions['trailingSlash'],
+	trailingSlash?: boolean,
 	base?: string,
 ): string {
 	let pathname = url.replace(/\/index.html$/, ''); // index.html is not canonical
