@@ -1,8 +1,7 @@
 import { z } from 'astro/zod';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
-import { yellow } from 'kleur/colors';
-import { atomSchema, atomEntrySchema } from './schema';
-import { createCanonicalURL, errorMap, isValidURL } from './util';
+import { atomSchema, atomEntrySchema } from './schema.js';
+import { errorMap } from './util.js';
 
 export { atomSchema };
 
