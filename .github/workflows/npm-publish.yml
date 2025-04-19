@@ -33,6 +33,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.1.0
       - run: pnpm install
+      - run: pnpm run update-version
       - run: pnpm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

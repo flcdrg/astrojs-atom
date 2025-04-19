@@ -2,13 +2,12 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -17,17 +16,55 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v4.1.0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.1.0
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
 
-    - run: pnpm install
-    - run: pnpm build
-    - run: pnpm test
+      - run: pnpm install
+      - run: pnpm exec nbgv cloud --all-vars
+      - name: gitversion
+        id: gitversion
+        run: |
+          echo "NBGV_SemVer2=$NBGV_SemVer2"
+          echo "NBGV_SemVer2=$NBGV_SemVer2" >> $GITHUB_OUTPUT
+      - run: pnpm run update-version
+      - run: pnpm build
+      - run: pnpm test
+
+      # publish artifacts for the build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ matrix.node-version }}
+
+  prepare_release:
+    runs-on: ubuntu-latest
+
+    needs: build
+    # if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Running this job only for master branch
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # dump needs.build.outputs
+      - name: Dump outputs
+        run: |
+          echo "${{ toJson(needs.build.outputs) }}"
+
+          printenv | sort
+
+    # - uses: release-drafter/release-drafter@v6
+    #   id: create_release
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     version: ${{ needs.build.outputs.NBGV_SemVer2 }}
