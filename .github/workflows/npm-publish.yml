@@ -18,6 +18,8 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 10.8.1 # Need to specify version as we don't do a checkout here
 
       # Download release artifacts
       - name: release-downloader
