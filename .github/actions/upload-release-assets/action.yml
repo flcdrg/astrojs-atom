@@ -65,20 +65,21 @@ runs:
           const __dirname = path.resolve()
 
           console.log('searching for release...')
+          let release;
           if (process.env.RELEASE_ID_INPUT != ''){
             console.log('using release id ' + process.env.RELEASE_ID_INPUT)
-            var { data: release } = await github.rest.repos.getRelease({
+            release = (await github.rest.repos.getRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: '${{inputs.releaseId}}'
-            });
+            })).data;
           }else if (process.env.RELEASE_TAG_INPUT != ''){
             console.log('using release tag ' + process.env.RELEASE_TAG_INPUT)
-            var { data: release } = await github.rest.repos.getReleaseByTag({
+            release = (await github.rest.repos.getReleaseByTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag: '${{inputs.releaseTag}}'
-            });
+            })).data;
           }else{
             # error out if no release id or tag is provided
             console.log('No release id or tag provided')
