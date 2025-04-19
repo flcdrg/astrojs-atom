@@ -22,10 +22,13 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "test": "vitest",
-    "prepublishOnly": "pnpm build"
+    "update-version": "node scripts/update-version.js",
+    "prepublishOnly": "pnpm update-version && pnpm build",
+    "get-version": "nbgv get-version"
   },
   "devDependencies": {
     "@types/xml2js": "^0.4.14",
+    "nerdbank-gitversioning": "3.8.38-alpha",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vitest": "^3.1.1",
