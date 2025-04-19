@@ -81,7 +81,7 @@ runs:
               tag: '${{inputs.releaseTag}}'
             })).data;
           }else{
-            # error out if no release id or tag is provided
+            // error out if no release id or tag is provided
             console.log('No release id or tag provided')
             return;
           }
