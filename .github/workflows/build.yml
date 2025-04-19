@@ -9,12 +9,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # for checkout
 
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+    outputs:
+      NBGV_SemVer2: ${{ steps.gitversion.outputs.NBGV_SemVer2 }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,17 +43,26 @@ jobs:
       - run: pnpm build
       - run: pnpm test
 
+      - run: pnpm pack
+
       # publish artifacts for the build
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts-${{ matrix.node-version }}
+          path: "*.tgz"
+          if-no-files-found: error # fail the job if no files found
 
   prepare_release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # for release drafter
 
     needs: build
-    # if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Running this job only for master branch
+    env:
+      NBGV_SemVer2: ${{ needs.build.outputs.NBGV_SemVer2 }}
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Running this job only for master branch
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,9 +74,9 @@ jobs:
 
           printenv | sort
 
-    # - uses: release-drafter/release-drafter@v6
-    #   id: create_release
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     version: ${{ needs.build.outputs.NBGV_SemVer2 }}
+      - uses: release-drafter/release-drafter@v6
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          version: ${{ needs.build.outputs.NBGV_SemVer2 }}
