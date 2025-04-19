@@ -98,8 +98,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
-      - uses: echapmanFromBunnings/upload-release-assets@1.4
+      - uses: ./.github/actions/upload-release-assets
         with:
-          releaseTag: ${{ steps.create_release.outputs.tag_name }}
+          releaseId: ${{ steps.create_release.outputs.release_id }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           files: "*.tgz"

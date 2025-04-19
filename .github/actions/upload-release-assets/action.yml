@@ -1,0 +1,212 @@
+name: "Upload release assets to an existing release"
+description: |
+  Allows the user to update an existing release
+author: "echapmanFromBunnings"
+branding:
+  icon: "archive"
+  color: "green"
+inputs:
+  releaseTag:
+    description: "Release tag to be updated"
+    required: false
+    default: "${{ github.event.release.tag_name }}"
+  releaseId:
+    description: "Release id to be updated"
+    required: false
+    default: "${{ github.event.release.id }}"
+  githubToken:
+    description: "Token for the repository. Can be passed in using {{ secrets.GITHUB_TOKEN }}"
+    required: true
+    default: ${{ github.token }}
+  files:
+    description: "Files to upload to GitHub, must be a multiline result. Glob supported."
+    required: false
+    default: ""
+  artefactName:
+    description: "The artefact to download if this is being done within another workflow"
+    required: false
+    default: ""
+  overrideExistingArtefact:
+    description: "Override artefact if it already exists. Token will need access to do so"
+    required: false
+    default: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate inputs
+      run: |
+        if [ -z "${{inputs.artefactName}}" ] && [ -z "${{inputs.files}}" ]
+        then
+            echo "No artefact or file name passed in"
+            exit 1
+        fi
+      shell: bash
+    - name: Download artefact
+      if: ${{ inputs.artefactName != null }}
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artefactName }}
+        path: ./_tmpuragha/out
+    - name: Upload assets
+      uses: actions/github-script@v6
+      env:
+        FILES: ${{ inputs.files }}
+        ARTEFACT_NAME_INPUT: "${{ inputs.artefactName }}"
+        OVERRIDE_ARTEFACTS: "${{ inputs.overrideExistingArtefact }}"
+      with:
+        github-token: ${{ inputs.githubToken }}
+        debug: true
+        script: |
+          const path = require('path');
+          const fs = require('fs');
+          const os = require('os');
+
+          const __dirname = path.resolve()
+
+          console.log('searching for release...')
+          if (process.env.RELEASE_ID_INPUT != ''){
+            console.log('using release id ' + process.env.RELEASE_ID_INPUT)
+            var { data: release } = await github.rest.repos.getRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: '${{inputs.releaseId}}'
+            });
+          }else if (process.env.RELEASE_TAG_INPUT != ''){
+            console.log('using release tag ' + process.env.RELEASE_TAG_INPUT)
+            var { data: release } = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: '${{inputs.releaseTag}}'
+            });
+          }else{
+            # error out if no release id or tag is provided
+            console.log('No release id or tag provided')
+            return;
+          }
+
+          console.log("found release " + release.name)
+
+          if (process.env.ARTEFACT_NAME_INPUT == '' && process.env.FILES.indexOf("*") > -1){
+            console.log('doing globbing option');
+            const globOptions = {
+                followSymbolicLinks: 'FALSE'
+            }
+            const files = process.env.FILES.split(os.EOL);
+            
+            const globber = await glob.create(files.join('\n'), globOptions)
+
+            for await (const file of globber.globGenerator()) {
+              console.log(file)
+              fs.readFile(file, 'utf8', (err, data) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                
+                const fileName = file.split("/").pop();
+                const assest = release.assets.filter(asset=>asset.name == fileName);
+                if(assest.length > 0 && process.env.OVERRIDE_ARTEFACTS == "true"){
+                  github.rest.repos.deleteReleaseAsset({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      asset_id: assest.id
+                  });                  
+                }
+                
+                console.log('write to '+ release.id)
+                github.rest.repos.uploadReleaseAsset({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    release_id: release.id,
+                    name: fileName,
+                    data: data
+                });
+              });
+            }
+          }else if(process.env.ARTEFACT_NAME_INPUT == ''){
+            console.log('doing file option');
+
+            const directoryPath = './';
+            fs.readdir(directoryPath, function (err, files) {
+              if (err) {
+                  return console.log('Unable to scan directory: ' + err);
+              }
+
+              //listing all files using forEach
+              files.forEach(function (file) {
+                console.log('local fs' + file)
+              });
+            });
+            
+            const files = process.env.FILES.split(os.EOL);
+            console.log(files)
+            files.forEach(file => {
+                if(file){
+                  const fullName = path.resolve(__dirname,file);
+                  console.log('filename: ' + fullName);
+                  fs.readFile(fullName, 'utf8', (err, data) => {
+                      if (err) {
+                        console.error(err);
+                        return;
+                      }
+                      
+                      const fileName = file.split("/").pop();
+                      const assest = release.assets.filter(asset=>asset.name == fileName);
+                      if(assest.length > 0 && process.env.OVERRIDE_ARTEFACTS == "true"){
+                        github.rest.repos.deleteReleaseAsset({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            asset_id: assest.id
+                        });                  
+                      }
+                      
+                      console.log('write to '+ release.id)
+                      github.rest.repos.uploadReleaseAsset({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        release_id: release.id,
+                        name: fileName,
+                        data: data
+                      });
+                  });              
+                }
+            });            
+          }else{
+            console.log('doing artefact option');
+            const directoryPath = './_tmpuragha/out/';
+            fs.readdir(directoryPath, function (err, files) {
+                if (err) {
+                    return console.log('Unable to scan directory: ' + err);
+                } 
+
+                //listing all files using forEach
+                files.forEach(function (file) {
+                  const fullName = path.resolve(__dirname, path.join('_tmpuragha/out/',file));
+                  fs.readFile(fullName, 'utf8', (err, data) => {
+                      if (err) {
+                        console.error(err);
+                        return;
+                      }
+                      
+                      const fileName = file.split("/").pop();
+                      const assest = release.assets.filter(asset=>asset.name == fileName);
+                      if(assest.length > 0 && process.env.OVERRIDE_ARTEFACTS == "true"){
+                        github.rest.repos.deleteReleaseAsset({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            asset_id: assest.id
+                        });                  
+                      }
+                      
+                      github.rest.repos.uploadReleaseAsset({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        release_id: release.id,
+                        name: fileName,
+                        data: data
+                      });
+                  });
+                });
+            });          
+          }
