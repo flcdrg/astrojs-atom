@@ -100,6 +100,6 @@ jobs:
 
       - uses: ./.github/actions/upload-release-assets
         with:
-          releaseId: ${{ steps.create_release.outputs.release_id }}
+          releaseId: ${{ steps.create_release.outputs.id }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           files: "*.tgz"
