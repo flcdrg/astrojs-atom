@@ -67,6 +67,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # download artifacts from the build job
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-22.x
+
       # dump needs.build.outputs
       - name: Dump outputs
         run: |
@@ -80,3 +86,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version: ${{ needs.build.outputs.NBGV_SemVer2 }}
+
+      - name: Remove existing release asset
+        uses: flcdrg/remove-release-asset-action@v4
+        with:
+          # The release id to remove asset from
+          release_id: ${{ steps.create_release.outputs.id }}
+          # The name of the asset you want to remove
+          asset_name: "*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - uses: echapmanFromBunnings/upload-release-assets@1.3
+        with:
+          releaseTag: ${{ steps.create_release.outputs.tag_name }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          files: "*.tgz"
