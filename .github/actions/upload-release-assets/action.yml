@@ -99,29 +99,33 @@ runs:
 
             for await (const file of globber.globGenerator()) {
               console.log(file)
-              fs.readFile(file, 'utf8', (err, data) => {
+
+              fs.readFile(file, (err, data) => {
                 if (err) {
                     console.error(err);
                     return;
                 }
                 
                 const fileName = file.split("/").pop();
-                const assest = release.assets.filter(asset=>asset.name == fileName);
-                if(assest.length > 0 && process.env.OVERRIDE_ARTEFACTS == "true"){
+                const asset = release.assets.filter(asset=>asset.name == fileName);
+                if(asset.length > 0 && process.env.OVERRIDE_ARTEFACTS == "true"){
                   github.rest.repos.deleteReleaseAsset({
                       owner: context.repo.owner,
                       repo: context.repo.repo,
-                      asset_id: assest.id
+                      asset_id: asset.id
                   });                  
                 }
                 
+                const headers = { 'content-type': 'application/gzip', 'content-length': data.length };
+
                 console.log('write to '+ release.id)
                 github.rest.repos.uploadReleaseAsset({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     release_id: release.id,
                     name: fileName,
-                    data: data
+                    data: data,
+                    headers: headers
                 });
               });
             }
@@ -146,29 +150,32 @@ runs:
                 if(file){
                   const fullName = path.resolve(__dirname,file);
                   console.log('filename: ' + fullName);
-                  fs.readFile(fullName, 'utf8', (err, data) => {
+                  fs.readFile(fullName, (err, data) => {
                       if (err) {
                         console.error(err);
                         return;
                       }
                       
                       const fileName = file.split("/").pop();
-                      const assest = release.assets.filter(asset=>asset.name == fileName);
-                      if(assest.length > 0 && process.env.OVERRIDE_ARTEFACTS == "true"){
+                      const asset = release.assets.filter(asset=>asset.name == fileName);
+                      if(asset.length > 0 && process.env.OVERRIDE_ARTEFACTS == "true"){
                         github.rest.repos.deleteReleaseAsset({
                             owner: context.repo.owner,
                             repo: context.repo.repo,
-                            asset_id: assest.id
+                            asset_id: asset.id
                         });                  
                       }
                       
+                      const headers = { 'content-type': 'application/gzip', 'content-length': data.length };
+
                       console.log('write to '+ release.id)
                       github.rest.repos.uploadReleaseAsset({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
                         release_id: release.id,
                         name: fileName,
-                        data: data
+                        data: data,
+                        headers: headers
                       });
                   });              
                 }
@@ -184,28 +191,31 @@ runs:
                 //listing all files using forEach
                 files.forEach(function (file) {
                   const fullName = path.resolve(__dirname, path.join('_tmpuragha/out/',file));
-                  fs.readFile(fullName, 'utf8', (err, data) => {
+                  fs.readFile(fullName, (err, data) => {
                       if (err) {
                         console.error(err);
                         return;
                       }
                       
                       const fileName = file.split("/").pop();
-                      const assest = release.assets.filter(asset=>asset.name == fileName);
-                      if(assest.length > 0 && process.env.OVERRIDE_ARTEFACTS == "true"){
+                      const asset = release.assets.filter(asset=>asset.name == fileName);
+                      if(asset.length > 0 && process.env.OVERRIDE_ARTEFACTS == "true"){
                         github.rest.repos.deleteReleaseAsset({
                             owner: context.repo.owner,
                             repo: context.repo.repo,
-                            asset_id: assest.id
+                            asset_id: asset.id
                         });                  
                       }
                       
+                      const headers = { 'content-type': 'application/gzip', 'content-length': data.length };
+
                       github.rest.repos.uploadReleaseAsset({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
                         release_id: release.id,
                         name: fileName,
-                        data: data
+                        data: data,
+                        headers: headers
                       });
                   });
                 });
