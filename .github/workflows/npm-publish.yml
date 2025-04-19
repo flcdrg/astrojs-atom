@@ -9,31 +9,29 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4.1.0
-      - run: pnpm install
-      - run: pnpm test
-
   publish-npm:
-    needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org/
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.1.0
-      - run: pnpm install
-      - run: pnpm run update-version
-      - run: pnpm publish
+
+      # Download release artifacts
+      - name: release-downloader
+        uses: robinraju/release-downloader@v1.12
+        with:
+          releaseId: ${{ github.event.release.id }}
+          fileName: "*.tgz"
+
+      - run: |
+          # Find *.tgz file in the current directory
+          file=$(ls *.tgz)
+          # Publish this file to npm
+          echo "Publishing $file to npm..."
+
+          pnpm publish "$file" --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
