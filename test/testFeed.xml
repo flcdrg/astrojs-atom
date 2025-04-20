@@ -7,14 +7,13 @@
   <rights>All rights reserved.</rights>
   <icon>https://example.com/icon.png</icon>
   <logo>https://example.com/logo.png</logo>
+  <generator uri="https://example.com/generator" version="1.0">Test Generator</generator>
   <author>
     <name>Test Author</name>
     <email>test@example.com</email>
   </author>
   <link href="https://example.com/" rel="self"/>
-  <category>
-    <term>Test</term>
-  </category>
+  <category term="Test"/>
   <contributor>
     <name>Test Contributor</name>
   </contributor>
@@ -23,9 +22,7 @@
     <title>Test Item 3</title>
     <updated>2024-10-03T00:00:00Z</updated>
     <link href="https://example.com/item3" rel="alternate"/>
-    <category>
-      <term>Test Item</term>
-    </category>
+    <category term="Test Item"/>
     <content>This is the latest test item.</content>
   </entry>
   <entry>
@@ -33,9 +30,7 @@
     <title>Test Item 2</title>
     <updated>2023-10-02T00:00:00Z</updated>
     <link href="https://example.com/item2" rel="alternate"/>
-    <category>
-      <term>Test Item 2</term>
-    </category>
+    <category term="Test Item 2"/>
     <content>This a newer test item.</content>
   </entry>
   <entry>
@@ -47,9 +42,7 @@
       <email>itemauthor@example.com</email>
     </author>
     <link href="https://example.com/item" rel="alternate"/>
-    <category>
-      <term>Test Item</term>
-    </category>
+    <category term="Test Item"/>
     <summary>This is a summary of the test item.</summary>
     <content>This is a test item.</content>
   </entry>

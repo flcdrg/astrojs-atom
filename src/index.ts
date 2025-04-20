@@ -101,7 +101,15 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
   if (atomOptions.rights) root.feed.rights = atomOptions.rights;
   if (atomOptions.icon) root.feed.icon = atomOptions.icon;
   if (atomOptions.logo) root.feed.logo = atomOptions.logo;
-  if (atomOptions.generator) root.feed.generator = atomOptions.generator;
+  if (atomOptions.generator) {
+    const { value, ...attrs } = atomOptions.generator;
+    root.feed.generator = {
+      ...Object.fromEntries(
+        Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
+      ),
+      "#text": value
+    };
+  }
 
   if (atomOptions.author) root.feed.author = atomOptions.author;
   if (atomOptions.link) {
@@ -111,7 +119,13 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
       )
     );
   }
-  if (atomOptions.category) root.feed.category = atomOptions.category;
+  if (atomOptions.category) {
+    root.feed.category = atomOptions.category.map((c) =>
+      Object.fromEntries(
+        Object.entries(c).map(([k, v]) => ["@_" + k, v])
+      )
+    );
+  }
   if (atomOptions.contributor) root.feed.contributor = atomOptions.contributor;
 
   // Custom data (inserted as raw XML)
@@ -143,7 +157,13 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
         )
       );
     }
-    if (entry.category) e.category = entry.category;
+    if (entry.category) {
+      e.category = entry.category.map((c) =>
+        Object.fromEntries(
+          Object.entries(c).map(([k, v]) => ["@_" + k, v])
+        )
+      );
+    }
     if (entry.contributor) e.contributor = entry.contributor;
     if (entry.published) e.published = entry.published;
     if (entry.rights) e.rights = entry.rights;
