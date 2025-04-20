@@ -18,6 +18,7 @@ export type AtomEntry = z.infer<typeof atomEntrySchema>;
 export type AtomFeedOptions = z.infer<typeof atomSchema> & {
   stylesheet?: string | boolean;
   xmlns?: Record<string, string>;
+  lang?: string; // Add lang option to specify xml:lang attribute
 };
 
 export default async function getAtomResponse(atomOptions: AtomFeedOptions): Promise<Response> {
@@ -31,10 +32,10 @@ export default async function getAtomResponse(atomOptions: AtomFeedOptions): Pro
 
 export async function getAtomString(atomOptions: AtomFeedOptions): Promise<string> {
   // Extract non-schema options
-  const { stylesheet, xmlns, ...schemaOptions } = atomOptions;
+  const { stylesheet, xmlns, lang, ...schemaOptions } = atomOptions;
   const validated = await validateAtomOptions(schemaOptions);
-  // Pass through stylesheet and xmlns for XML generation
-  return await generateAtom({ ...validated, stylesheet, xmlns });
+  // Pass through stylesheet, xmlns and lang for XML generation
+  return await generateAtom({ ...validated, stylesheet, xmlns, lang });
 }
 
 async function validateAtomOptions(atomOptions: z.infer<typeof atomSchema>) {
@@ -56,7 +57,11 @@ async function validateAtomOptions(atomOptions: z.infer<typeof atomSchema>) {
 }
 
 /** Generate Atom 1.0 feed */
-async function generateAtom(atomOptions: z.infer<typeof atomSchema> & { stylesheet?: string | boolean; xmlns?: Record<string, string> }): Promise<string> {
+async function generateAtom(atomOptions: z.infer<typeof atomSchema> & { 
+  stylesheet?: string | boolean; 
+  xmlns?: Record<string, string>;
+  lang?: string; // Add lang parameter
+}): Promise<string> {
   const xmlOptions = {
     ignoreAttributes: false,
     suppressEmptyNode: true,
@@ -75,6 +80,11 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & { styleshe
 
   // Atom root element and namespace
   root.feed = { '@_xmlns': 'http://www.w3.org/2005/Atom' };
+  
+  // Add xml:lang if specified
+  if (atomOptions.lang) {
+    root.feed['@_xml:lang'] = atomOptions.lang;
+  }
 
   // Additional namespaces
   if (atomOptions.xmlns) {
@@ -113,7 +123,13 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & { styleshe
   }
 
   // Entries
-  root.feed.entry = atomOptions.entry.map((entry) => {
+  root.feed.entry = atomOptions.entry
+    .sort((a, b) => {
+      const aUpdated = new Date(a.updated).getTime();
+      const bUpdated = new Date(b.updated).getTime();
+      return bUpdated - aUpdated;
+    })
+    .map((entry) => {
     const e: Record<string, unknown> = {
       id: entry.id,
       title: entry.title,

@@ -1,18 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-AU">
   <id>https://example.com/</id>
   <title>Test Feed</title>
   <updated>2023-10-01T00:00:00Z</updated>
   <subtitle>Test Description</subtitle>
+  <rights>All rights reserved.</rights>
+  <icon>https://example.com/icon.png</icon>
+  <logo>https://example.com/logo.png</logo>
   <author>
     <name>Test Author</name>
     <email>test@example.com</email>
   </author>
   <link href="https://example.com/" rel="self"/>
+  <category>
+    <term>Test</term>
+  </category>
+  <contributor>
+    <name>Test Contributor</name>
+  </contributor>
+  <entry>
+    <id>https://example.com/item3</id>
+    <title>Test Item 3</title>
+    <updated>2024-10-03T00:00:00Z</updated>
+    <link href="https://example.com/item3" rel="alternate"/>
+    <category>
+      <term>Test Item</term>
+    </category>
+    <content>This is the latest test item.</content>
+  </entry>
+  <entry>
+    <id>https://example.com/item2</id>
+    <title>Test Item 2</title>
+    <updated>2023-10-02T00:00:00Z</updated>
+    <link href="https://example.com/item2" rel="alternate"/>
+    <category>
+      <term>Test Item 2</term>
+    </category>
+    <content>This a newer test item.</content>
+  </entry>
   <entry>
     <id>https://example.com/item</id>
     <title>Test Item</title>
     <updated>2023-10-01T00:00:00Z</updated>
+    <author>
+      <name>Test Item Author</name>
+      <email>itemauthor@example.com</email>
+    </author>
+    <link href="https://example.com/item" rel="alternate"/>
+    <category>
+      <term>Test Item</term>
+    </category>
+    <summary>This is a summary of the test item.</summary>
     <content>This is a test item.</content>
   </entry>
 </feed>
