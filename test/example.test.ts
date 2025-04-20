@@ -36,7 +36,10 @@ test('generates valid Atom feed', async () => {
                 title: "Test Item 2",
                 id: "https://example.com/item2",
                 updated: '2023-10-02T00:00:00Z',
-                content: "This a newer test item.",
+                content: {
+                    value: "<p>This is another <em>test</em> item.</p>",
+                    type: "html",
+                },
                 link: [{ href: "https://example.com/item2", rel: "alternate" }],
                 category: [{ term: "Test Item 2" }],
             },
