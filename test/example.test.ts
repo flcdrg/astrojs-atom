@@ -3,6 +3,11 @@ import { expect, test } from "vitest";
 
 test('generates valid Atom feed', async () => {
     const result = await getAtomString({
+        generator: {
+            value: "Test Generator",
+            uri: "https://example.com/generator",
+            version: "1.0",
+        },
         title: "Test Feed",
         subtitle: "Test Description",
         id: "https://example.com/",
