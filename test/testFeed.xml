@@ -31,7 +31,9 @@
     <updated>2023-10-02T00:00:00Z</updated>
     <link href="https://example.com/item2" rel="alternate"/>
     <category term="Test Item 2"/>
-    <content>This a newer test item.</content>
+    <content type="html">
+      <![CDATA[<p>This is another <em>test</em> item.</p>]]>
+    </content>
   </entry>
   <entry>
     <id>https://example.com/item</id>

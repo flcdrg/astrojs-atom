@@ -67,6 +67,7 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
     suppressEmptyNode: true,
     suppressBooleanAttributes: false,
     format: true,
+    cdataPropName: "__cdata", // Special property name to indicate CDATA content
   };
   const parser = new XMLParser(xmlOptions);
   const root: any = { '?xml': { '@_version': '1.0', '@_encoding': 'UTF-8' } };
@@ -169,7 +170,24 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
     if (entry.rights) e.rights = entry.rights;
     if (entry.source) e.source = entry.source;
     if (entry.summary) e.summary = entry.summary;
-    if (entry.content) e.content = entry.content;
+    if (entry.content) {
+      // Handle content as an object with attributes if it's an object,
+      // or as a simple string value if it's a string
+      if (typeof entry.content === 'object') {
+        const { value, ...attrs } = entry.content;
+        const needsCDATA = attrs.type === 'html' || attrs.type === 'xml' || attrs.type?.includes('+xml');
+        
+        e.content = {
+          ...Object.fromEntries(
+            Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
+          ),
+          // Use __cdata property for HTML/XML content to prevent entity encoding
+          ...(needsCDATA ? { "__cdata": value } : { "#text": value })
+        };
+      } else {
+        e.content = entry.content;
+      }
+    }
     if (typeof entry.customData === 'string') {
       Object.assign(e, parser.parse(`<entry>${entry.customData}</entry>`).entry);
     }

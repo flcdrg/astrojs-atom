@@ -74,6 +74,19 @@ const source = z.object({
   subtitle: z.string().optional(),
 });
 
+// Atom Content construct
+const content = z.union([
+  z.string(),
+  z.object({
+    /** Content value/text (required) */
+    value: z.string(),
+    /** Content type (optional) */
+    type: z.string().optional(),
+    /** Source URL (optional) */
+    src: z.string().url().optional(),
+  })
+]);
+
 // Atom Entry schema
 export const atomEntrySchema = z.object({
   /** Unique identifier for the entry (required) */
@@ -99,7 +112,7 @@ export const atomEntrySchema = z.object({
   /** Short summary of the entry (optional) */
   summary: z.string().optional(),
   /** Full content of the entry (optional) */
-  content: z.string().optional(),
+  content: content.optional(),
   /** Custom XML data for the entry (optional) */
   customData: z.string().optional(),
 });
