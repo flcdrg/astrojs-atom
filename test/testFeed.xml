@@ -19,16 +19,16 @@
   </contributor>
   <entry>
     <id>https://example.com/item3</id>
-    <title>Test Item 3</title>
     <updated>2024-10-03T00:00:00Z</updated>
+    <title>Test Item 3</title>
     <link href="https://example.com/item3" rel="alternate"/>
     <category term="Test Item"/>
     <content>This is the latest test item.</content>
   </entry>
   <entry>
     <id>https://example.com/item2</id>
-    <title>Test Item 2</title>
     <updated>2023-10-02T00:00:00Z</updated>
+    <title>Test Item 2</title>
     <link href="https://example.com/item2" rel="alternate"/>
     <category term="Test Item 2"/>
     <content type="html">
@@ -37,8 +37,8 @@
   </entry>
   <entry>
     <id>https://example.com/item</id>
-    <title>Test Item</title>
     <updated>2023-10-01T00:00:00Z</updated>
+    <title type="html">Test Item</title>
     <author>
       <name>Test Item Author</name>
       <email>itemauthor@example.com</email>

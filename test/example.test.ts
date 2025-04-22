@@ -22,7 +22,10 @@ test('generates valid Atom feed', async () => {
         logo: "https://example.com/logo.png",
         entry: [
             {
-                title: "Test Item",
+                title: {
+                    value: "Test Item",
+                    type: "html",
+                },
                 id: "https://example.com/item",
                 updated: '2023-10-01T00:00:00Z',
                 content: "This is a test item.",
