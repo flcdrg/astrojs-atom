@@ -1,5 +1,16 @@
 import { z } from 'astro/zod';
 
+// Atom Text Construct (for title, summary, rights, etc.)
+const textConstruct = z.union([
+  z.string(),
+  z.object({
+    /** Text value (required) */
+    value: z.string(),
+    /** Content type (optional) */
+    type: z.string().optional(),
+  })
+]);
+
 // Atom Person construct
 const person = z.object({
   /** Human-readable name for the person (required) */
@@ -51,7 +62,7 @@ const source = z.object({
   /** Unique identifier for the source feed (required) */
   id: z.string(),
   /** Title of the source feed (required) */
-  title: z.string(),
+  title: textConstruct,
   /** Last updated timestamp (required, RFC 3339) */
   updated: z.string(),
   /** Authors of the source feed (optional) */
@@ -69,7 +80,7 @@ const source = z.object({
   /** Logo for the source feed (optional) */
   logo: z.string().optional(),
   /** Rights information (optional) */
-  rights: z.string().optional(),
+  rights: textConstruct.optional(),
   /** Subtitle for the source feed (optional) */
   subtitle: z.string().optional(),
 });
@@ -92,7 +103,7 @@ export const atomEntrySchema = z.object({
   /** Unique identifier for the entry (required) */
   id: z.string(),
   /** Title of the entry (required) */
-  title: z.string(),
+  title: textConstruct,
   /** Last updated timestamp (required, RFC 3339) */
   updated: z.string(),
   /** Authors of the entry (optional) */
@@ -106,11 +117,11 @@ export const atomEntrySchema = z.object({
   /** Initial creation or first availability (optional, RFC 3339) */
   published: z.string().optional(),
   /** Rights information (optional) */
-  rights: z.string().optional(),
+  rights: textConstruct.optional(),
   /** Source feed for republished entries (optional) */
   source: source.optional(),
   /** Short summary of the entry (optional) */
-  summary: z.string().optional(),
+  summary: textConstruct.optional(),
   /** Full content of the entry (optional) */
   content: content.optional(),
   /** Custom XML data for the entry (optional) */
@@ -122,7 +133,7 @@ export const atomSchema = z.object({
   /** Unique identifier for the feed (required) */
   id: z.string(),
   /** Title of the feed (required) */
-  title: z.string(),
+  title: textConstruct,
   /** Last updated timestamp (required, RFC 3339) */
   updated: z.string(),
   /** Authors of the feed (optional, required if not all entries have an author) */
@@ -140,7 +151,7 @@ export const atomSchema = z.object({
   /** Logo for the feed (optional) */
   logo: z.string().optional(),
   /** Rights information (optional) */
-  rights: z.string().optional(),
+  rights: textConstruct.optional(),
   /** Subtitle for the feed (optional) */
   subtitle: z.string().optional(),
   /** Array of Atom entries (required) */

@@ -96,10 +96,40 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
 
   // Feed metadata
   root.feed.id = atomOptions.id;
-  root.feed.title = atomOptions.title;
+  
+  // Handle title as text construct
+  if (typeof atomOptions.title === 'object') {
+    const { value, ...attrs } = atomOptions.title;
+    
+    root.feed.title = {
+      ...Object.fromEntries(
+        Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
+      ),
+      "#text": value
+    };
+  } else {
+    root.feed.title = atomOptions.title;
+  }
+  
   root.feed.updated = atomOptions.updated;
   if (atomOptions.subtitle) root.feed.subtitle = atomOptions.subtitle;
-  if (atomOptions.rights) root.feed.rights = atomOptions.rights;
+  
+  // Handle rights as text construct
+  if (atomOptions.rights) {
+    if (typeof atomOptions.rights === 'object') {
+      const { value, ...attrs } = atomOptions.rights;
+      
+      root.feed.rights = {
+        ...Object.fromEntries(
+          Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
+        ),
+        "#text": value
+      };
+    } else {
+      root.feed.rights = atomOptions.rights;
+    }
+  }
+  
   if (atomOptions.icon) root.feed.icon = atomOptions.icon;
   if (atomOptions.logo) root.feed.logo = atomOptions.logo;
   if (atomOptions.generator) {
@@ -147,9 +177,23 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
     .map((entry) => {
     const e: Record<string, unknown> = {
       id: entry.id,
-      title: entry.title,
       updated: entry.updated,
     };
+
+    // Handle title as text construct
+    if (typeof entry.title === 'object') {
+      const { value, ...attrs } = entry.title;
+      
+      e.title = {
+        ...Object.fromEntries(
+          Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
+        ),
+        "#text": value
+      };
+    } else {
+      e.title = entry.title;
+    }
+    
     if (entry.author) e.author = entry.author;
     if (entry.link) {
       e.link = entry.link.map((l) =>
@@ -167,9 +211,37 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
     }
     if (entry.contributor) e.contributor = entry.contributor;
     if (entry.published) e.published = entry.published;
-    if (entry.rights) e.rights = entry.rights;
+    if (entry.rights) {
+      // Handle rights as text construct
+      if (typeof entry.rights === 'object') {
+        const { value, ...attrs } = entry.rights;
+        
+        e.rights = {
+          ...Object.fromEntries(
+            Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
+          ),
+          "#text": value
+        };
+      } else {
+        e.rights = entry.rights;
+      }
+    }
     if (entry.source) e.source = entry.source;
-    if (entry.summary) e.summary = entry.summary;
+    if (entry.summary) {
+      // Handle summary as text construct
+      if (typeof entry.summary === 'object') {
+        const { value, ...attrs } = entry.summary;
+        
+        e.summary = {
+          ...Object.fromEntries(
+            Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
+          ),
+          "#text": value
+        };
+      } else {
+        e.summary = entry.summary;
+      }
+    }
     if (entry.content) {
       // Handle content as an object with attributes if it's an object,
       // or as a simple string value if it's a string
