@@ -29,10 +29,15 @@ test('generates valid Atom feed', async () => {
                 id: "https://example.com/item",
                 updated: '2023-10-01T00:00:00Z',
                 content: "This is a test item.",
-                summary: "This is a summary of the test item.",
+                summary: {
+                    value: "This is a summary of the test item.",
+                    type: "html",},
                 author: [{ name: "Test Item Author", email: "itemauthor@example.com" }],
                 link: [{ href: "https://example.com/item", rel: "alternate" }],
                 category: [{ term: "Test Item" }],
+                thumbnail: {
+                    url: "https://example.com/thumbnail.png"
+                }
 
             },
             {

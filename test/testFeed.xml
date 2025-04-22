@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-AU">
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-AU" xmlns:media="http://search.yahoo.com/mrss/">
   <id>https://example.com/</id>
   <title>Test Feed</title>
   <updated>2023-10-01T00:00:00Z</updated>
@@ -45,7 +45,11 @@
     </author>
     <link href="https://example.com/item" rel="alternate"/>
     <category term="Test Item"/>
-    <summary>This is a summary of the test item.</summary>
+    <summary type="html">
+      <![CDATA[This is a summary of the test item.]]>
+    </summary>
     <content>This is a test item.</content>
+    <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://example.com/thumbnail.png"/>
+    <media:content medium="image" xmlns:media="http://search.yahoo.com/mrss/" url="https://example.com/thumbnail.png"/>
   </entry>
 </feed>

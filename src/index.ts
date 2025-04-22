@@ -7,12 +7,22 @@ export { atomSchema };
 
 type UnwrapArray<T> = T extends Array<infer U> ? U : never;
 
+// Define the thumbnail interface explicitly for better TypeScript support
+interface MediaThumbnail {
+  url: string;
+  medium?: string;
+  width?: number;
+  height?: number;
+  time?: string;
+}
+
 export type AtomPerson = UnwrapArray<z.infer<typeof atomSchema>['author']>;
 export type AtomLink = UnwrapArray<z.infer<typeof atomSchema>['link']>;
 export type AtomCategory = UnwrapArray<z.infer<typeof atomSchema>['category']>;
 export type AtomContributor = UnwrapArray<z.infer<typeof atomSchema>['contributor']>;
 export type AtomGenerator = z.infer<typeof atomSchema>['generator'];
 export type AtomSource = z.infer<typeof atomEntrySchema>['source'];
+export type AtomMediaThumbnail = z.infer<typeof atomEntrySchema>['thumbnail'];
 export type AtomEntry = z.infer<typeof atomEntrySchema>;
 
 export type AtomFeedOptions = z.infer<typeof atomSchema> & {
@@ -231,12 +241,14 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
       // Handle summary as text construct
       if (typeof entry.summary === 'object') {
         const { value, ...attrs } = entry.summary;
+        const needsCDATA = attrs.type === 'html' || attrs.type === 'xml' || attrs.type?.includes('+xml');
         
         e.summary = {
           ...Object.fromEntries(
             Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
           ),
-          "#text": value
+          // Use __cdata property for HTML/XML summary content to prevent entity encoding
+          ...(needsCDATA ? { "__cdata": value } : { "#text": value })
         };
       } else {
         e.summary = entry.summary;
@@ -263,6 +275,46 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
     if (typeof entry.customData === 'string') {
       Object.assign(e, parser.parse(`<entry>${entry.customData}</entry>`).entry);
     }
+    
+    // Handle media thumbnail and content
+    if (entry.thumbnail) {
+      // Add the media namespace if not already included in the feed namespaces
+      if (!atomOptions.xmlns || !atomOptions.xmlns['media']) {
+        if (!root.feed['@_xmlns:media']) {
+          root.feed['@_xmlns:media'] = 'http://search.yahoo.com/mrss/';
+        }
+      }
+      
+      // Access the thumbnail properties safely
+      const url = (entry.thumbnail as any).url as string;
+      const medium = (entry.thumbnail as any).medium as string | undefined;
+      const width = (entry.thumbnail as any).width as number | undefined;
+      const height = (entry.thumbnail as any).height as number | undefined;
+      const time = (entry.thumbnail as any).time as string | undefined;
+      
+      // Create media:thumbnail element with type assertion
+      e['media:thumbnail'] = {
+        '@_xmlns:media': 'http://search.yahoo.com/mrss/',
+        '@_url': url
+      } as Record<string, any>;
+      
+      // Add optional attributes to thumbnail
+      if (width !== undefined) (e['media:thumbnail'] as Record<string, any>)['@_width'] = width;
+      if (height !== undefined) (e['media:thumbnail'] as Record<string, any>)['@_height'] = height;
+      if (time !== undefined) (e['media:thumbnail'] as Record<string, any>)['@_time'] = time;
+      
+      // Create media:content element with type assertion
+      e['media:content'] = {
+        '@_medium': medium || "image",
+        '@_xmlns:media': 'http://search.yahoo.com/mrss/',
+        '@_url': url
+      } as Record<string, any>;
+            
+      // Add optional attributes to content if present
+      if (width !== undefined) (e['media:content'] as Record<string, any>)['@_width'] = width;
+      if (height !== undefined) (e['media:content'] as Record<string, any>)['@_height'] = height;
+    }
+    
     return e;
   });
 

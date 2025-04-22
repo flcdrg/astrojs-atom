@@ -121,6 +121,7 @@ Each entry in the `entry` array can have the following properties:
 | `rights` | `string` or `object` | Entry-specific copyright information |
 | `source` | `object` | Source feed information for republished entries |
 | `customData` | `string` | Custom XML to include in the entry |
+| `thumbnail` | `object` | Thumbnail image for the entry |
 
 ## Text Constructs (title, summary, rights)
 
@@ -172,6 +173,41 @@ getAtomResponse({
 });
 ```
 
+## Media Content
+
+The Atom feed generator supports adding media elements to entries using the Yahoo Media RSS extension.
+
+### Adding Thumbnails
+
+You can add thumbnail images to entries with the `thumbnail` property:
+
+```typescript
+{
+  // ...other entry properties
+  thumbnail: {
+    url: "https://example.com/images/thumbnail.jpg",
+    medium: "image", // Optional, defaults to "image"
+    width: 300,      // Optional
+    height: 200      // Optional
+  }
+}
+```
+
+This will generate both `media:thumbnail` and `media:content` elements in your feed:
+
+```xml
+<media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" 
+  url="https://example.com/images/thumbnail.jpg"
+  width="300" height="200" />
+<media:content medium="image" 
+  url="https://example.com/images/thumbnail.jpg"
+  width="300" height="200"
+  xmlns:media="http://search.yahoo.com/mrss/" />
+```
+
+The Media RSS namespace (`xmlns:media="http://search.yahoo.com/mrss/"`) is automatically added when a thumbnail is included.
+
 ## Validation
 
 To validate your Atom feed, use the [W3C Feed Validation Service](https://validator.w3.org/feed/).
+````

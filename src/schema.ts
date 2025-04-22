@@ -98,6 +98,34 @@ const content = z.union([
   })
 ]);
 
+// Atom Media Thumbnail construct
+const mediaThumbnail = z.object({
+  /** URL of the thumbnail image (required) */
+  url: z.string().url(),
+  /** Medium type for media:content (optional) */
+  medium: z.string().optional(),
+  /** Width of the thumbnail (optional) */
+  width: z.number().optional(),
+  /** Height of the thumbnail (optional) */
+  height: z.number().optional(),
+  /** Time code for thumbnails from video (optional) */
+  time: z.string().optional(),
+});
+
+// Atom Media Content construct
+const mediaContent = z.object({
+  /** URL of the media content (required) */
+  url: z.string().url(),
+  /** Medium type (optional) */
+  medium: z.string().optional(),
+  /** Width of the media (optional) */
+  width: z.number().optional(),
+  /** Height of the media (optional) */
+  height: z.number().optional(),
+  /** Duration of the media (optional) */
+  duration: z.number().optional(),
+});
+
 // Atom Entry schema
 export const atomEntrySchema = z.object({
   /** Unique identifier for the entry (required) */
@@ -124,6 +152,8 @@ export const atomEntrySchema = z.object({
   summary: textConstruct.optional(),
   /** Full content of the entry (optional) */
   content: content.optional(),
+  /** Media thumbnail (optional) - generates both media:thumbnail and media:content elements */
+  thumbnail: mediaThumbnail.optional(),
   /** Custom XML data for the entry (optional) */
   customData: z.string().optional(),
 });
