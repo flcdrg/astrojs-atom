@@ -2,6 +2,7 @@ import { z } from 'astro/zod';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import { atomSchema, atomEntrySchema } from './schema.js';
 import { errorMap } from './util.js';
+import { defaultGenerator } from './generator.js';
 
 export { atomSchema };
 
@@ -142,15 +143,16 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
   
   if (atomOptions.icon) root.feed.icon = atomOptions.icon;
   if (atomOptions.logo) root.feed.logo = atomOptions.logo;
-  if (atomOptions.generator) {
-    const { value, ...attrs } = atomOptions.generator;
-    root.feed.generator = {
-      ...Object.fromEntries(
-        Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
-      ),
-      "#text": value
-    };
-  }
+  
+  // Use the provided generator or the default generator
+  const generator = atomOptions.generator || defaultGenerator;
+  const { value, ...attrs } = generator;
+  root.feed.generator = {
+    ...Object.fromEntries(
+      Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
+    ),
+    "#text": value
+  };
 
   if (atomOptions.author) root.feed.author = atomOptions.author;
   if (atomOptions.link) {
