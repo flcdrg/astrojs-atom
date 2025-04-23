@@ -267,11 +267,15 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
           ...Object.fromEntries(
             Object.entries(attrs).map(([k, v]) => ["@_" + k, v])
           ),
+          "@_xml:base": entry.id, // Add xml:base attribute with the entry's ID as the value
           // Use __cdata property for HTML/XML content to prevent entity encoding
           ...(needsCDATA ? { "__cdata": value } : { "#text": value })
         };
       } else {
-        e.content = entry.content;
+        e.content = {
+          "@_xml:base": entry.id, // Add xml:base attribute with the entry's ID as the value
+          "#text": entry.content
+        };
       }
     }
     if (typeof entry.customData === 'string') {
