@@ -23,7 +23,7 @@
     <title>Test Item 3</title>
     <link href="https://example.com/item3" rel="alternate"/>
     <category term="Test Item"/>
-    <content>This is the latest test item.</content>
+    <content xml:base="https://example.com/item3">This is the latest test item.</content>
   </entry>
   <entry>
     <id>https://example.com/item2</id>
@@ -31,7 +31,7 @@
     <title>Test Item 2</title>
     <link href="https://example.com/item2" rel="alternate"/>
     <category term="Test Item 2"/>
-    <content type="html">
+    <content type="html" xml:base="https://example.com/item2">
       <![CDATA[<p>This is another <em>test</em> item.</p>]]>
     </content>
   </entry>
@@ -48,7 +48,7 @@
     <summary type="html">
       <![CDATA[This is a summary of the test item.]]>
     </summary>
-    <content>This is a test item.</content>
+    <content xml:base="https://example.com/item">This is a test item.</content>
     <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://example.com/thumbnail.png"/>
     <media:content medium="image" xmlns:media="http://search.yahoo.com/mrss/" url="https://example.com/thumbnail.png"/>
   </entry>
