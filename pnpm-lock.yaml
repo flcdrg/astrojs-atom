@@ -19,8 +19,8 @@ importers:
         specifier: ^0.4.14
         version: 0.4.14
       nerdbank-gitversioning:
-        specifier: 3.8.38-alpha
-        version: 3.8.38-alpha
+        specifier: 3.8.118
+        version: 3.8.118
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@24.5.2)(typescript@5.9.2)
@@ -1261,8 +1261,8 @@ packages:
     resolution: {integrity: sha512-Z4SmBUweYa09+o6pG+eASabEpP6QkQ70yHj351pQoEXIs8uHbaU2DWVmzBANKgflPa47A50PtB2+NgRpQvr7vA==}
     engines: {node: '>= 10'}
 
-  nerdbank-gitversioning@3.8.38-alpha:
-    resolution: {integrity: sha512-LPwDbgEkkcXffaqP80Pl1QccYibl1xe+1tJrUr7zVm/RIg9f9LfCbfsAYMomzUz5iAtiPztqe29HS3gfDcUHow==}
+  nerdbank-gitversioning@3.8.118:
+    resolution: {integrity: sha512-HbwT9OA/XBLgtUqWWqpiA3glZRHV7kS/gjizguGElVXYzCNvhF7hHOEt1nuQ6wsGNAYLmwAMtEQcnHQqSMbItQ==}
     hasBin: true
 
   nlcst-to-string@4.0.0:
@@ -3241,7 +3241,7 @@ snapshots:
 
   neotraverse@0.6.18: {}
 
-  nerdbank-gitversioning@3.8.38-alpha: {}
+  nerdbank-gitversioning@3.8.118: {}
 
   nlcst-to-string@4.0.0:
     dependencies:
