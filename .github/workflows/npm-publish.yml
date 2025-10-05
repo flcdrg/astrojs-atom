@@ -11,6 +11,10 @@ on:
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # for checkout
+      id-token: write # for OIDC to get npm token
+    environment: release
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -35,5 +39,3 @@ jobs:
           echo "Publishing $file to npm..."
 
           pnpm publish "$file" --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
