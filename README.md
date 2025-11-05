@@ -1,5 +1,7 @@
 # astrojs-atom
 
+![NPM Version](https://img.shields.io/npm/v/astrojs-atom)
+
 A library for generating [Atom syndication feeds](https://validator.w3.org/feed/docs/atom.html) in Astro projects. This is a fork of `@astrojs/rss` that implements the Atom feed format instead of RSS.
 
 ## Installation
