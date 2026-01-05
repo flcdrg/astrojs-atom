@@ -88,7 +88,7 @@ jobs:
           version: ${{ needs.build.outputs.NBGV_SemVer2 }}
 
       - name: Remove existing release asset
-        uses: flcdrg/remove-release-asset-action@v4
+        uses: flcdrg/remove-release-asset-action@v5
         with:
           # The release id to remove asset from
           release_id: ${{ steps.create_release.outputs.id }}
