@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       astro:
-        specifier: ^5.15.1
-        version: 5.16.8(@types/node@25.0.3)(rollup@4.55.1)(typescript@5.9.3)
+        specifier: ^5.16.11
+        version: 5.16.11(@types/node@25.0.3)(rollup@4.55.1)(typescript@5.9.3)
       fast-xml-parser:
         specifier: ^5.3.0
         version: 5.3.3
@@ -826,8 +826,8 @@ packages:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
     engines: {node: '>=12'}
 
-  astro@5.16.8:
-    resolution: {integrity: sha512-gzZE+epuCrNuxOa8/F1dzkllDOFvxWhGeobQKeBRIAef5sUpUKMHZo/8clse+02rYnKJCgwXBgjW4uTu9mqUUw==}
+  astro@5.16.11:
+    resolution: {integrity: sha512-Z7kvkTTT5n6Hn5lCm6T3WU6pkxx84Hn25dtQ6dR7ATrBGq9eVa8EuB/h1S8xvaoVyCMZnIESu99Z9RJfdLRLDA==}
     engines: {node: 18.20.8 || ^20.3.0 || >=22.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -975,8 +975,8 @@ packages:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
     engines: {node: '>=0.3.1'}
 
-  diff@5.2.0:
-    resolution: {integrity: sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==}
+  diff@8.0.3:
+    resolution: {integrity: sha512-qejHi7bcSD4hQAZE0tNAawRK1ZtafHDmMTMkrrIGgSLl7hTnQHmKCeB45xAcbfTqK2zowkM3j3bHt/4b/ARbYQ==}
     engines: {node: '>=0.3.1'}
 
   dlv@1.1.3:
@@ -2490,7 +2490,7 @@ snapshots:
 
   assertion-error@2.0.1: {}
 
-  astro@5.16.8(@types/node@25.0.3)(rollup@4.55.1)(typescript@5.9.3):
+  astro@5.16.11(@types/node@25.0.3)(rollup@4.55.1)(typescript@5.9.3):
     dependencies:
       '@astrojs/compiler': 2.13.0
       '@astrojs/internal-helpers': 0.7.5
@@ -2511,7 +2511,7 @@ snapshots:
       debug: 4.4.3
       deterministic-object-hash: 2.0.2
       devalue: 5.6.2
-      diff: 5.2.0
+      diff: 8.0.3
       dlv: 1.1.3
       dset: 3.1.4
       es-module-lexer: 1.7.0
@@ -2706,7 +2706,7 @@ snapshots:
 
   diff@4.0.2: {}
 
-  diff@5.2.0: {}
+  diff@8.0.3: {}
 
   dlv@1.1.3: {}
 
