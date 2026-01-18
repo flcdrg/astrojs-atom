@@ -31,7 +31,7 @@
     "nerdbank-gitversioning": "3.9.50",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.4",
+    "vitest": "^4.0.17",
     "xml2js": "0.6.2"
   },
   "dependencies": {
