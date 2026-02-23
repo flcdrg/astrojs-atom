@@ -13,7 +13,7 @@ importers:
         version: 5.17.3(@types/node@25.0.3)(rollup@4.59.0)(typescript@5.9.3)
       fast-xml-parser:
         specifier: ^5.3.3
-        version: 5.3.6
+        version: 5.3.7
     devDependencies:
       '@types/xml2js':
         specifier: ^0.4.14
@@ -1176,8 +1176,8 @@ packages:
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
 
-  fast-xml-parser@5.3.6:
-    resolution: {integrity: sha512-QNI3sAvSvaOiaMl8FYU4trnEzCwiRr8XMWgAHzlrWpTSj+QaCSvOf1h82OEP1s4hiAXhnbXSyFWCf4ldZzZRVA==}
+  fast-xml-parser@5.3.7:
+    resolution: {integrity: sha512-JzVLro9NQv92pOM/jTCR6mHlJh2FGwtomH8ZQjhFj/R29P2Fnj38OgPJVtcvYw6SuKClhgYuwUZf5b3rd8u2mA==}
     hasBin: true
 
   fdir@6.5.0:
@@ -3022,7 +3022,7 @@ snapshots:
 
   extend@3.0.2: {}
 
-  fast-xml-parser@5.3.6:
+  fast-xml-parser@5.3.7:
     dependencies:
       strnum: 2.1.2
 
