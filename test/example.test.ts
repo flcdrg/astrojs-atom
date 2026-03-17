@@ -1,4 +1,4 @@
-import getAtomResponse, { getAtomString, type AtomFeedOptions } from "../src/index";
+import getAtomResponse, { atomSchema, getAtomString, type AtomFeedOptions } from "../src/index";
 import { expect, test } from "vitest";
 
 function createValidFeed(): AtomFeedOptions {
@@ -195,6 +195,51 @@ test('inlines xml content and base64-encodes binary content', async () => {
     expect(result).toContain("<widget>");
     expect(result).toContain("<part>Hi</part>");
     expect(result).toContain('<content type="application/octet-stream" xml:base="https://example.com/binary">aGVsbG8=</content>');
+});
+
+test('supports external content via src without requiring an inline value', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [
+            {
+                title: "External Content Entry",
+                id: "https://example.com/external",
+                updated: "2023-10-02T00:00:00Z",
+                summary: "External content summary",
+                content: { src: "https://example.com/body.html", type: "text/html" },
+                link: [{ href: "https://example.com/external", rel: "alternate" }],
+            },
+        ],
+    });
+
+    expect(result).toContain('<content src="https://example.com/body.html" type="text/html" xml:base="https://example.com/external"/>');
+});
+
+test('rejects content objects that mix src with an inline value', async () => {
+    const parsed = await atomSchema.safeParseAsync({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [
+            {
+                title: "Invalid Content Entry",
+                id: "https://example.com/invalid-content",
+                updated: "2023-10-02T00:00:00Z",
+                content: {
+                    src: "https://example.com/body.html",
+                    type: "text/html",
+                    value: "<p>Should not be inline</p>",
+                },
+                link: [{ href: "https://example.com/invalid-content", rel: "alternate" }],
+            },
+        ],
+    });
+
+    expect(parsed.success).toBe(false);
 });
 
 test('uses the Atom media type for feed responses by default', async () => {

@@ -87,17 +87,29 @@ const source = z.object({
   subtitle: z.string().optional(),
 });
 
+const inlineContent = z.object({
+  /** Content value/text (required) */
+  value: z.string(),
+  /** Content type (optional) */
+  type: z.string().optional(),
+  /** Source URL is not allowed for inline content */
+  src: z.never().optional(),
+});
+
+const externalContent = z.object({
+  /** Source URL for externally hosted content (required) */
+  src: z.string().url(),
+  /** Content type (optional) */
+  type: z.string().optional(),
+  /** Inline value is not allowed when src is provided */
+  value: z.never().optional(),
+});
+
 // Atom Content construct
 const content = z.union([
   z.string(),
-  z.object({
-    /** Content value/text (required) */
-    value: z.string(),
-    /** Content type (optional) */
-    type: z.string().optional(),
-    /** Source URL (optional) */
-    src: z.string().url().optional(),
-  })
+  inlineContent,
+  externalContent,
 ]);
 
 // Atom Media Thumbnail construct

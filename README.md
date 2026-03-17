@@ -117,7 +117,7 @@ Each entry in the `entry` array can have the following properties:
 | Property | Type | Description |
 |----------|------|-------------|
 | `author` | `Array` | Entry authors |
-| `content` | `string` or `object` | Full content of the entry. When using an object, you can specify `type`, optional `src`, and the `value` |
+| `content` | `string` or `object` | Full content of the entry. Object content can either provide an inline `value` or an external `src`, plus an optional `type` |
 | `link` | `Array` | Links related to the entry |
 | `summary` | `string` or `object` | Summary of the entry |
 | `category` | `Array` | Categories for the entry |
@@ -194,6 +194,27 @@ This generates inline XHTML wrapped in the required XHTML `div`:
     <p>This is <strong>XHTML</strong> content.</p>
   </div>
 </content>
+```
+
+### Entry with External Content
+
+```typescript
+{
+  title: "Hosted Elsewhere",
+  id: "https://example.com/blog/hosted-elsewhere",
+  updated: "2023-01-01T00:00:00Z",
+  summary: "Read the full article at the source URL.",
+  content: {
+    src: "https://example.com/content/hosted-elsewhere.html",
+    type: "text/html"
+  }
+}
+```
+
+When `src` is present, the content is linked externally and no inline `value` is allowed:
+
+```xml
+<content src="https://example.com/content/hosted-elsewhere.html" type="text/html" />
 ```
 
 ### Using Custom XML Namespaces
