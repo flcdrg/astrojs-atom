@@ -65,7 +65,7 @@ export async function GET(context) {
 
 ### Main Functions
 
-- `getAtomResponse`: Returns a `Response` object with the Atom XML and proper headers
+- `getAtomResponse`: Returns a `Response` object with the Atom XML and an Atom-specific `Content-Type` header
 - `getAtomString`: Returns just the XML string without creating a Response object
 
 ### Feed Options (AtomFeedOptions)
@@ -95,7 +95,10 @@ export async function GET(context) {
 | `lang` | `string` | Language of the feed (sets xml:lang attribute) |
 | `xmlns` | `object` | Custom XML namespaces to include |
 | `stylesheet` | `string` | URL to an XSL stylesheet |
+| `useLegacyXmlContentType` | `boolean` | Makes `getAtomResponse()` use the legacy `application/xml; charset=utf-8` header instead of the default Atom media type |
 | `customData` | `string` | Custom XML to include in the feed |
+
+`getAtomResponse()` now returns `Content-Type: application/atom+xml; charset=utf-8` by default. If you need the previous header for compatibility with an existing consumer, set `useLegacyXmlContentType: true`.
 
 ### Entry Properties
 

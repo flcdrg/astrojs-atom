@@ -30,6 +30,7 @@ export type AtomFeedOptions = z.infer<typeof atomSchema> & {
   stylesheet?: string | boolean;
   xmlns?: Record<string, string>;
   lang?: string; // Add lang option to specify xml:lang attribute
+  useLegacyXmlContentType?: boolean;
 };
 
 type AtomTextConstruct = string | {
@@ -197,9 +198,13 @@ function serializeContentConstruct(
 
 export default async function getAtomResponse(atomOptions: AtomFeedOptions): Promise<Response> {
   const atomString = await getAtomString(atomOptions);
+  const contentType = atomOptions.useLegacyXmlContentType
+    ? 'application/xml; charset=utf-8'
+    : 'application/atom+xml; charset=utf-8';
+
   return new Response(atomString, {
     headers: {
-      'Content-Type': 'application/xml',
+      'Content-Type': contentType,
     },
   });
 }
@@ -207,6 +212,7 @@ export default async function getAtomResponse(atomOptions: AtomFeedOptions): Pro
 export async function getAtomString(atomOptions: AtomFeedOptions): Promise<string> {
   // Extract non-schema options
   const { stylesheet, xmlns, lang, ...schemaOptions } = atomOptions;
+  delete schemaOptions.useLegacyXmlContentType;
   const validated = await validateAtomOptions(schemaOptions);
   // Pass through stylesheet, xmlns and lang for XML generation
   return await generateAtom({ ...validated, stylesheet, xmlns, lang });
