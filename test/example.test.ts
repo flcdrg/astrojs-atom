@@ -1,4 +1,4 @@
-import { atomSchema, getAtomString } from "../src/index";
+import getAtomResponse, { getAtomString } from "../src/index";
 import { expect, test } from "vitest";
 
 test('generates valid Atom feed', async () => {
@@ -144,4 +144,29 @@ test('inlines xml content and base64-encodes binary content', async () => {
     expect(result).toContain("<widget>");
     expect(result).toContain("<part>Hi</part>");
     expect(result).toContain('<content type="application/octet-stream" xml:base="https://example.com/binary">aGVsbG8=</content>');
+});
+
+test('uses the Atom media type for feed responses by default', async () => {
+    const response = await getAtomResponse({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [],
+    });
+
+    expect(response.headers.get("Content-Type")).toBe("application/atom+xml; charset=utf-8");
+});
+
+test('can fall back to the legacy XML media type for feed responses', async () => {
+    const response = await getAtomResponse({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [],
+        useLegacyXmlContentType: true,
+    });
+
+    expect(response.headers.get("Content-Type")).toBe("application/xml; charset=utf-8");
 });
