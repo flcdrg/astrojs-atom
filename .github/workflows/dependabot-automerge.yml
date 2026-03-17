@@ -15,14 +15,20 @@ jobs:
       - name: Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v2.5.0
+        continue-on-error: true # Handle 'PR is not from Dependabot, nothing to do' error quietly
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
+
       - name: Enable auto-merge for Dependabot PRs
         if: ${{
           steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
           steps.metadata.outputs.update-type == 'version-update:semver-minor' ||
+          contains(steps.metadata.outputs.dependency-names, 'actions/checkout') ||
           contains(steps.metadata.outputs.dependency-names, 'actions/upload-artifact') ||
-          contains(steps.metadata.outputs.dependency-names, 'actions/download-artifact')
+          contains(steps.metadata.outputs.dependency-names, 'actions/download-artifact') ||
+          contains(steps.metadata.outputs.dependency-names, 'pnpm/action-setup') ||
+          contains(steps.metadata.outputs.dependency-names, 'release-drafter/release-drafter') ||
+          contains(steps.metadata.outputs.dependency-names, 'actions/setup-node')
           }}
         run: gh pr merge --auto --merge "$PR_URL"
         env:
