@@ -420,7 +420,6 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
         
         // Create media:thumbnail element with type assertion
         e['media:thumbnail'] = {
-          '@_xmlns:media': 'http://search.yahoo.com/mrss/',
           '@_url': url
         } as Record<string, any>;
         
@@ -432,7 +431,6 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
         // Create media:content element with type assertion
         e['media:content'] = {
           '@_medium': medium || "image",
-          '@_xmlns:media': 'http://search.yahoo.com/mrss/',
           '@_url': url
         } as Record<string, any>;
               

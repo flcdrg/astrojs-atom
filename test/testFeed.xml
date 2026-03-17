@@ -29,8 +29,8 @@
     <category term="Test Item"/>
     <summary type="html">This is a summary of the test item.</summary>
     <content>This is a test item.</content>
-    <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://example.com/thumbnail.png"/>
-    <media:content medium="image" xmlns:media="http://search.yahoo.com/mrss/" url="https://example.com/thumbnail.png"/>
+    <media:thumbnail url="https://example.com/thumbnail.png"/>
+    <media:content medium="image" url="https://example.com/thumbnail.png"/>
   </entry>
   <entry>
     <id>https://example.com/item2</id>

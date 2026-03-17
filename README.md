@@ -273,16 +273,17 @@ You can add thumbnail images to entries with the `thumbnail` property:
 This will generate both `media:thumbnail` and `media:content` elements in your feed:
 
 ```xml
-<media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" 
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+  <media:thumbnail
   url="https://example.com/images/thumbnail.jpg"
   width="300" height="200" />
-<media:content medium="image" 
+  <media:content medium="image"
   url="https://example.com/images/thumbnail.jpg"
-  width="300" height="200"
-  xmlns:media="http://search.yahoo.com/mrss/" />
+  width="300" height="200" />
+</feed>
 ```
 
-The Media RSS namespace (`xmlns:media="http://search.yahoo.com/mrss/"`) is automatically added when a thumbnail is included.
+The Media RSS namespace (`xmlns:media="http://search.yahoo.com/mrss/"`) is automatically added once at the feed level when a thumbnail is included.
 
 ## Validation
 
