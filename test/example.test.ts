@@ -292,6 +292,47 @@ test('rejects malformed URI references for Atom URI fields', async () => {
     })).rejects.toThrow("link.0.href");
 });
 
+test('accepts numeric byte lengths for Atom links', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        link: [{ href: "/feed", rel: "self", length: 1234 }],
+        entry: [
+            {
+                title: "Linked Entry",
+                id: "https://example.com/item",
+                updated: "2023-10-02T00:00:00Z",
+                link: [{ href: "https://example.com/item", rel: "alternate", length: "5678" }],
+            },
+        ],
+    });
+
+    expect(result).toContain('<link href="/feed" rel="self" length="1234"/>');
+    expect(result).toContain('<link href="https://example.com/item" rel="alternate" length="5678"/>');
+});
+
+test('rejects non-numeric Atom link lengths', async () => {
+    await expect(getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        link: [{ href: "/feed", rel: "self", length: "12 bytes" }],
+        entry: [],
+    })).rejects.toThrow("link.0.length");
+
+    await expect(getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        link: [{ href: "/feed", rel: "self", length: -1 }],
+        entry: [],
+    })).rejects.toThrow("link.0.length");
+});
+
 test('uses the Atom media type for feed responses by default', async () => {
     const response = await getAtomResponse({
         title: "Test Feed",

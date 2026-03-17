@@ -1,6 +1,10 @@
 import { z } from 'astro/zod';
 
 const rfc3339DateTime = z.string().datetime({ offset: true });
+const byteLength = z.union([
+  z.number().int().nonnegative(),
+  z.string().regex(/^\d+$/),
+]);
 const uriReference = z.string().min(1).refine((value) => {
   if (/[\u0000-\u001F\u007F\s]/.test(value)) {
     return false;
@@ -54,7 +58,7 @@ const link = z.object({
   /** Human-readable information about the link (optional) */
   title: z.string().optional(),
   /** Length of the resource in bytes (optional) */
-  length: z.string().optional(),
+  length: byteLength.optional(),
 });
 
 // Atom Category construct

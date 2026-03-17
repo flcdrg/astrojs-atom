@@ -276,4 +276,6 @@ To validate your Atom feed, use the [W3C Feed Validation Service](https://valida
 The library also validates Atom date-time fields against RFC 3339 during schema parsing. `feed.updated`, `entry.updated`, `entry.published`, and `source.updated` must include a full date-time with either `Z` or an explicit UTC offset.
 
 URI-based Atom fields such as `link.href`, `author.uri`, `generator.uri`, and `content.src` accept Atom-compatible URI or URI-reference values like `urn:uuid:...` and `/feed`, not just absolute URLs.
+
+Atom `link.length` values are validated as non-negative byte counts. You can pass either a number like `1234` or a numeric string like `"1234"`.
 ````
