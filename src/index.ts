@@ -41,7 +41,11 @@ type AtomTextConstruct = string | {
 type AtomContentConstruct = string | {
   value: string;
   type?: string;
-  src?: string;
+  src?: never;
+} | {
+  src: string;
+  type?: string;
+  value?: never;
 };
 
 const XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
@@ -158,16 +162,21 @@ function serializeContentConstruct(
     };
   }
 
+  if ('src' in content) {
+    const xmlAttributes = {
+      ...toXmlAttributes(content),
+      '@_xml:base': entryId,
+    };
+
+    return xmlAttributes;
+  }
+
   const { value, ...attributes } = content;
   const xmlAttributes = {
     ...toXmlAttributes(attributes),
     '@_xml:base': entryId,
   };
   const normalizedType = getConstructType(attributes.type);
-
-  if (attributes.src) {
-    return xmlAttributes;
-  }
 
   if (normalizedType === 'xhtml') {
     return {
