@@ -90,6 +90,71 @@ test('generates valid Atom feed', async () => {
     expect(result).toContain('xml:lang="en-AU"');
 });
 
+test('preserves entry input order by default', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [
+            {
+                title: "First Entry",
+                id: "https://example.com/first",
+                updated: "2023-10-01T00:00:00Z",
+                link: [{ href: "https://example.com/first", rel: "alternate" }],
+            },
+            {
+                title: "Newest Entry",
+                id: "https://example.com/newest",
+                updated: "2023-10-03T00:00:00Z",
+                link: [{ href: "https://example.com/newest", rel: "alternate" }],
+            },
+            {
+                title: "Middle Entry",
+                id: "https://example.com/middle",
+                updated: "2023-10-02T00:00:00Z",
+                link: [{ href: "https://example.com/middle", rel: "alternate" }],
+            },
+        ],
+    });
+
+    expect(result.indexOf("<title>First Entry</title>")).toBeLessThan(result.indexOf("<title>Newest Entry</title>"));
+    expect(result.indexOf("<title>Newest Entry</title>")).toBeLessThan(result.indexOf("<title>Middle Entry</title>"));
+});
+
+test('can sort entries by updated descending when requested', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        sortEntriesByUpdated: true,
+        entry: [
+            {
+                title: "First Entry",
+                id: "https://example.com/first",
+                updated: "2023-10-01T00:00:00Z",
+                link: [{ href: "https://example.com/first", rel: "alternate" }],
+            },
+            {
+                title: "Newest Entry",
+                id: "https://example.com/newest",
+                updated: "2023-10-03T00:00:00Z",
+                link: [{ href: "https://example.com/newest", rel: "alternate" }],
+            },
+            {
+                title: "Middle Entry",
+                id: "https://example.com/middle",
+                updated: "2023-10-02T00:00:00Z",
+                link: [{ href: "https://example.com/middle", rel: "alternate" }],
+            },
+        ],
+    });
+
+    expect(result.indexOf("<title>Newest Entry</title>")).toBeLessThan(result.indexOf("<title>Middle Entry</title>"));
+    expect(result.indexOf("<title>Middle Entry</title>")).toBeLessThan(result.indexOf("<title>First Entry</title>"));
+});
+
 test('serializes html text constructs and content as escaped text', async () => {
     const result = await getAtomString({
         title: { value: "<em>Feed</em>", type: "html" },
