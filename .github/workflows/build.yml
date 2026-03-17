@@ -80,7 +80,7 @@ jobs:
 
           printenv | sort
 
-      - uses: release-drafter/release-drafter@v6
+      - uses: release-drafter/release-drafter@v7
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
