@@ -114,6 +114,34 @@ test('serializes html text constructs and content as escaped text', async () => 
     expect(result).not.toContain("<![CDATA[");
 });
 
+test('serializes html subtitle text constructs as escaped text', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        subtitle: { value: "<p>Subtitle</p>", type: "html" },
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [],
+    });
+
+    expect(result).toContain('<subtitle type="html">&lt;p&gt;Subtitle&lt;/p&gt;</subtitle>');
+});
+
+test('wraps xhtml subtitle text constructs in an XHTML div', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        subtitle: { value: "<p><strong>Subtitle</strong></p>", type: "xhtml" },
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [],
+    });
+
+    expect(result).toContain('<subtitle type="xhtml">');
+    expect(result).toContain('<div xmlns="http://www.w3.org/1999/xhtml">');
+    expect(result).toContain("<strong>Subtitle</strong>");
+});
+
 test('wraps xhtml text constructs and content in an XHTML div', async () => {
     const result = await getAtomString({
         title: "Test Feed",

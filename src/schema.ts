@@ -185,7 +185,7 @@ export const atomSchema = z.object({
   /** Rights information (optional) */
   rights: textConstruct.optional(),
   /** Subtitle for the feed (optional) */
-  subtitle: z.string().optional(),
+  subtitle: textConstruct.optional(),
   /** Array of Atom entries (required) */
   entry: z.array(atomEntrySchema),
   /** Custom XML data for the feed (optional) */

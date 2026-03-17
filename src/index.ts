@@ -281,7 +281,9 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
   root.feed.title = serializeTextConstruct(atomOptions.title, parser);
   
   root.feed.updated = atomOptions.updated;
-  if (atomOptions.subtitle) root.feed.subtitle = atomOptions.subtitle;
+  if (atomOptions.subtitle) {
+    root.feed.subtitle = serializeTextConstruct(atomOptions.subtitle, parser);
+  }
   
   // Handle rights as text construct
   if (atomOptions.rights) {

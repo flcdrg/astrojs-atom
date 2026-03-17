@@ -83,7 +83,7 @@ export async function GET(context) {
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `subtitle` | `string` | Description or subtitle for the feed |
+| `subtitle` | `string` or `object` | Description or subtitle for the feed as an Atom text construct |
 | `author` | `Array` | Feed authors as an array of person objects |
 | `link` | `Array` | Links related to the feed |
 | `category` | `Array` | Categories for the feed |
@@ -128,9 +128,9 @@ Each entry in the `entry` array can have the following properties:
 | `customData` | `string` | Custom XML to include in the entry |
 | `thumbnail` | `object` | Thumbnail image for the entry |
 
-## Text Constructs (title, summary, rights)
+## Text Constructs (title, subtitle, summary, rights)
 
-For properties like `title`, `summary`, and `rights`, you can use either:
+For properties like `title`, `subtitle`, `summary`, and `rights`, you can use either:
 
 - A simple string: `title: "My Title"`
 - An object with attributes: `title: { value: "My Title", type: "html" }`
