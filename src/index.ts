@@ -41,10 +41,12 @@ type AtomTextConstruct = string | {
 type AtomContentConstruct = string | {
   value: string;
   type?: string;
+  base?: string;
   src?: never;
 } | {
   src: string;
   type?: string;
+  base?: string;
   value?: never;
 };
 
@@ -189,29 +191,26 @@ function serializeSource(source: NonNullable<AtomSource>, parser: XMLParser) {
 
 function serializeContentConstruct(
   content: AtomContentConstruct,
-  entryId: string,
   parser: XMLParser,
 ) {
   if (typeof content === 'string') {
-    return {
-      '@_xml:base': entryId,
-      '#text': content,
-    };
+    return content;
   }
 
   if ('src' in content) {
+    const { base, ...attributes } = content;
     const xmlAttributes = {
-      ...toXmlAttributes(content),
-      '@_xml:base': entryId,
+      ...toXmlAttributes(attributes),
+      ...(base ? { '@_xml:base': base } : {}),
     };
 
     return xmlAttributes;
   }
 
-  const { value, ...attributes } = content;
+  const { value, base, ...attributes } = content;
   const xmlAttributes = {
     ...toXmlAttributes(attributes),
-    '@_xml:base': entryId,
+    ...(base ? { '@_xml:base': base } : {}),
   };
   const normalizedType = getConstructType(attributes.type);
 
@@ -391,7 +390,6 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
       if (entry.content) {
         e.content = serializeContentConstruct(
           entry.content,
-          entry.id,
           parser,
         );
       }

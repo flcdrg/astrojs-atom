@@ -110,7 +110,7 @@ test('serializes html text constructs and content as escaped text', async () => 
 
     expect(result).toContain('<title type="html">&lt;em&gt;Feed&lt;/em&gt;</title>');
     expect(result).toContain('<summary type="html">&lt;p&gt;Summary&lt;/p&gt;</summary>');
-    expect(result).toContain('<content type="html" xml:base="https://example.com/item">&lt;p&gt;Body&lt;/p&gt;</content>');
+    expect(result).toContain('<content type="html">&lt;p&gt;Body&lt;/p&gt;</content>');
     expect(result).not.toContain("<![CDATA[");
 });
 
@@ -207,7 +207,7 @@ test('wraps xhtml text constructs and content in an XHTML div', async () => {
 
     expect(result).toContain('<title type="xhtml">');
     expect(result).toContain('<summary type="xhtml">');
-    expect(result).toContain('<content type="xhtml" xml:base="https://example.com/item">');
+    expect(result).toContain('<content type="xhtml">');
     expect(result).toContain('<div xmlns="http://www.w3.org/1999/xhtml">');
     expect(result).toContain("<strong>Body</strong>");
 });
@@ -236,10 +236,10 @@ test('inlines xml content and base64-encodes binary content', async () => {
         ],
     });
 
-    expect(result).toContain('<content type="application/xml" xml:base="https://example.com/xml">');
+    expect(result).toContain('<content type="application/xml">');
     expect(result).toContain("<widget>");
     expect(result).toContain("<part>Hi</part>");
-    expect(result).toContain('<content type="application/octet-stream" xml:base="https://example.com/binary">aGVsbG8=</content>');
+    expect(result).toContain('<content type="application/octet-stream">aGVsbG8=</content>');
 });
 
 test('supports external content via src without requiring an inline value', async () => {
@@ -260,7 +260,35 @@ test('supports external content via src without requiring an inline value', asyn
         ],
     });
 
-    expect(result).toContain('<content src="https://example.com/body.html" type="text/html" xml:base="https://example.com/external"/>');
+    expect(result).toContain('<content src="https://example.com/body.html" type="text/html"/>');
+});
+
+test('serializes xml:base on content only when explicitly provided', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [
+            {
+                title: "Inline Base Entry",
+                id: "https://example.com/inline-base",
+                updated: "2023-10-02T00:00:00Z",
+                content: { value: "<p>Body</p>", type: "html", base: "https://cdn.example.com/articles/" },
+                link: [{ href: "https://example.com/inline-base", rel: "alternate" }],
+            },
+            {
+                title: "External Base Entry",
+                id: "https://example.com/external-base",
+                updated: "2023-10-03T00:00:00Z",
+                content: { src: "body.html", type: "text/html", base: "https://cdn.example.com/articles/" },
+                link: [{ href: "https://example.com/external-base", rel: "alternate" }],
+            },
+        ],
+    });
+
+    expect(result).toContain('<content type="html" xml:base="https://cdn.example.com/articles/">&lt;p&gt;Body&lt;/p&gt;</content>');
+    expect(result).toContain('<content src="body.html" type="text/html" xml:base="https://cdn.example.com/articles/"/>');
 });
 
 test('rejects content objects that mix src with an inline value', async () => {
@@ -313,7 +341,7 @@ test('accepts Atom URI references and non-URL URIs for Atom fields', async () =>
     expect(result).toContain('<uri>tag:example.com,2026:test-author</uri>');
     expect(result).toContain('<generator uri="urn:example:generator">Test Generator</generator>');
     expect(result).toContain('<link href="/feed" rel="self"/>');
-    expect(result).toContain('<content src="/content/full.html" type="text/html" xml:base="urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a"/>');
+    expect(result).toContain('<content src="/content/full.html" type="text/html"/>');
     expect(result).toContain('<link href="../entries/relative-link-entry" rel="alternate"/>');
 });
 
