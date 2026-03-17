@@ -242,6 +242,56 @@ test('rejects content objects that mix src with an inline value', async () => {
     expect(parsed.success).toBe(false);
 });
 
+test('accepts Atom URI references and non-URL URIs for Atom fields', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "urn:uuid:60a76c80-d399-11d9-b93c-0003939e0af6",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author", uri: "tag:example.com,2026:test-author" }],
+        generator: {
+            value: "Test Generator",
+            uri: "urn:example:generator",
+        },
+        link: [{ href: "/feed", rel: "self" }],
+        entry: [
+            {
+                title: "Relative Link Entry",
+                id: "urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a",
+                updated: "2023-10-02T00:00:00Z",
+                summary: "External content summary",
+                content: { src: "/content/full.html", type: "text/html" },
+                link: [{ href: "../entries/relative-link-entry", rel: "alternate" }],
+            },
+        ],
+    });
+
+    expect(result).toContain('<uri>tag:example.com,2026:test-author</uri>');
+    expect(result).toContain('<generator uri="urn:example:generator">Test Generator</generator>');
+    expect(result).toContain('<link href="/feed" rel="self"/>');
+    expect(result).toContain('<content src="/content/full.html" type="text/html" xml:base="urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a"/>');
+    expect(result).toContain('<link href="../entries/relative-link-entry" rel="alternate"/>');
+});
+
+test('rejects malformed URI references for Atom URI fields', async () => {
+    await expect(getAtomString({
+        title: "Test Feed",
+        id: "urn:uuid:60a76c80-d399-11d9-b93c-0003939e0af6",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author", uri: "not a uri" }],
+        link: [{ href: "/feed", rel: "self" }],
+        entry: [],
+    })).rejects.toThrow("author.0.uri");
+
+    await expect(getAtomString({
+        title: "Test Feed",
+        id: "urn:uuid:60a76c80-d399-11d9-b93c-0003939e0af6",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        link: [{ href: "http://exa mple.com", rel: "self" }],
+        entry: [],
+    })).rejects.toThrow("link.0.href");
+});
+
 test('uses the Atom media type for feed responses by default', async () => {
     const response = await getAtomResponse({
         title: "Test Feed",
