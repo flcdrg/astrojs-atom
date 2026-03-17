@@ -4,7 +4,7 @@
 - Use `pnpm` for all package management and scripts.
 - Install dependencies with `pnpm install`.
 - Build with `pnpm build`.
-- Run tests with `pnpm test`.
+- Run tests with `pnpm exec vitest run`.
 - Before finishing code changes, run the most relevant tests and the TypeScript build when public types or serialization logic changes.
 
 ## Architecture
@@ -27,6 +27,11 @@
 - Use `test/example.test.ts` and `test/testFeed.xml` as the baseline pattern for new serialization coverage.
 - Add focused tests for validator/spec edge cases rather than only expanding the main snapshot.
 - If output ordering matters, assert it explicitly because entries are currently sorted during generation.
+
+## PowerShell Notes
+- When running Git commands in PowerShell, quote ref syntax like `'@{upstream}'` so PowerShell does not parse it as a hash literal.
+- Prefer simple statement separators like `;` when mixing CLI commands with PowerShell expressions or redirection in one command.
+- Use `2>$null` to suppress expected stderr noise from probe commands such as checking whether a PR already exists.
 
 ## Pitfalls
 - The library mixes validation and serialization concerns closely, so seemingly small schema changes can alter generated XML or public typings.
