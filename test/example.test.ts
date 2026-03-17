@@ -66,3 +66,82 @@ test('generates valid Atom feed', async () => {
     // Additional assertions to specifically test xml:lang attribute
     expect(result).toContain('xml:lang="en-AU"');
 });
+
+test('serializes html text constructs and content as escaped text', async () => {
+    const result = await getAtomString({
+        title: { value: "<em>Feed</em>", type: "html" },
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [
+            {
+                title: { value: "<strong>Entry</strong>", type: "html" },
+                id: "https://example.com/item",
+                updated: "2023-10-01T00:00:00Z",
+                summary: { value: "<p>Summary</p>", type: "html" },
+                content: { value: "<p>Body</p>", type: "html" },
+                link: [{ href: "https://example.com/item", rel: "alternate" }],
+            },
+        ],
+    });
+
+    expect(result).toContain('<title type="html">&lt;em&gt;Feed&lt;/em&gt;</title>');
+    expect(result).toContain('<summary type="html">&lt;p&gt;Summary&lt;/p&gt;</summary>');
+    expect(result).toContain('<content type="html" xml:base="https://example.com/item">&lt;p&gt;Body&lt;/p&gt;</content>');
+    expect(result).not.toContain("<![CDATA[");
+});
+
+test('wraps xhtml text constructs and content in an XHTML div', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [
+            {
+                title: { value: "<p><em>Entry</em></p>", type: "xhtml" },
+                id: "https://example.com/item",
+                updated: "2023-10-01T00:00:00Z",
+                summary: { value: "<p>Summary</p>", type: "xhtml" },
+                content: { value: "<p><strong>Body</strong></p>", type: "xhtml" },
+                link: [{ href: "https://example.com/item", rel: "alternate" }],
+            },
+        ],
+    });
+
+    expect(result).toContain('<title type="xhtml">');
+    expect(result).toContain('<summary type="xhtml">');
+    expect(result).toContain('<content type="xhtml" xml:base="https://example.com/item">');
+    expect(result).toContain('<div xmlns="http://www.w3.org/1999/xhtml">');
+    expect(result).toContain("<strong>Body</strong>");
+});
+
+test('inlines xml content and base64-encodes binary content', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [
+            {
+                title: "XML Entry",
+                id: "https://example.com/xml",
+                updated: "2023-10-02T00:00:00Z",
+                content: { value: "<widget><part>Hi</part></widget>", type: "application/xml" },
+                link: [{ href: "https://example.com/xml", rel: "alternate" }],
+            },
+            {
+                title: "Binary Entry",
+                id: "https://example.com/binary",
+                updated: "2023-10-01T00:00:00Z",
+                content: { value: "hello", type: "application/octet-stream" },
+                link: [{ href: "https://example.com/binary", rel: "alternate" }],
+            },
+        ],
+    });
+
+    expect(result).toContain('<content type="application/xml" xml:base="https://example.com/xml">');
+    expect(result).toContain("<widget>");
+    expect(result).toContain("<part>Hi</part>");
+    expect(result).toContain('<content type="application/octet-stream" xml:base="https://example.com/binary">aGVsbG8=</content>');
+});

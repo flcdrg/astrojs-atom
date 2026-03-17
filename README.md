@@ -114,7 +114,7 @@ Each entry in the `entry` array can have the following properties:
 | Property | Type | Description |
 |----------|------|-------------|
 | `author` | `Array` | Entry authors |
-| `content` | `string` or `object` | Full content of the entry. When using an object, you can specify `type` (like "html") and the `value` |
+| `content` | `string` or `object` | Full content of the entry. When using an object, you can specify `type`, optional `src`, and the `value` |
 | `link` | `Array` | Links related to the entry |
 | `summary` | `string` or `object` | Summary of the entry |
 | `category` | `Array` | Categories for the entry |
@@ -137,9 +137,12 @@ For properties like `title`, `summary`, and `rights`, you can use either:
 Common `type` attribute values include:
 
 - `"text"` (default) - Plain text
-- `"html"` - HTML content 
-- `"xhtml"` - XHTML content
-- `"application/xml"` or other MIME types
+- `"html"` - Serialized as entity-escaped HTML
+- `"xhtml"` - Serialized as inline XHTML wrapped in `<div xmlns="http://www.w3.org/1999/xhtml">`
+- XML media types such as `"application/xml"` or `"image/svg+xml"` - Serialized inline as XML
+- Other non-text media types - Serialized as base64-encoded content
+
+For Atom text constructs such as `title`, `summary`, and `rights`, use `text`, `html`, or `xhtml`.
 
 ## Examples
 
@@ -155,6 +158,39 @@ Common `type` attribute values include:
     value: "<p>This is <strong>formatted</strong> content.</p>"
   }
 }
+```
+
+This generates escaped HTML inside the Atom element body, not CDATA:
+
+```xml
+<content type="html">&lt;p&gt;This is &lt;strong&gt;formatted&lt;/strong&gt; content.&lt;/p&gt;</content>
+```
+
+### Entry with XHTML Content
+
+```typescript
+{
+  title: {
+    type: "xhtml",
+    value: "<p>This is <strong>XHTML</strong> content.</p>"
+  },
+  id: "https://example.com/blog/xhtml-article",
+  updated: "2023-01-01T00:00:00Z",
+  content: {
+    type: "xhtml",
+    value: "<p>This is <strong>XHTML</strong> content.</p>"
+  }
+}
+```
+
+This generates inline XHTML wrapped in the required XHTML `div`:
+
+```xml
+<content type="xhtml">
+  <div xmlns="http://www.w3.org/1999/xhtml">
+    <p>This is <strong>XHTML</strong> content.</p>
+  </div>
+</content>
 ```
 
 ### Using Custom XML Namespaces
