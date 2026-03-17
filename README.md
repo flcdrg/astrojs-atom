@@ -117,7 +117,7 @@ Each entry in the `entry` array can have the following properties:
 | Property | Type | Description |
 |----------|------|-------------|
 | `author` | `Array` | Entry authors |
-| `content` | `string` or `object` | Full content of the entry. Object content can either provide an inline `value` or an external `src`, plus an optional `type` |
+| `content` | `string` or `object` | Full content of the entry. Object content can either provide an inline `value` or an external `src`, plus optional `type` and explicit `base` values |
 | `link` | `Array` | Links related to the entry |
 | `summary` | `string` or `object` | Summary of the entry |
 | `category` | `Array` | Categories for the entry |
@@ -217,6 +217,18 @@ When `src` is present, the content is linked externally and no inline `value` is
 <content src="https://example.com/content/hosted-elsewhere.html" type="text/html" />
 ```
 
+`xml:base` is no longer added automatically to every `<content>` element. If you need it for relative IRI resolution, use object-form content and pass an explicit `base` value:
+
+```typescript
+{
+  content: {
+    value: "<p>Body</p>",
+    type: "html",
+    base: "https://cdn.example.com/articles/"
+  }
+}
+```
+
 ### Using Custom XML Namespaces
 
 ```typescript
@@ -282,4 +294,6 @@ Atom `link.length` values are validated as non-negative byte counts. You can pas
 Atom author requirements are also validated across the whole feed: if the feed has no top-level `author`, then every entry must provide author data either directly on the entry or through its `source`.
 
 `entry.source` metadata is serialized with the same Atom construct mappings as top-level feed metadata, so `source.title`, `source.subtitle`, and `source.rights` support text constructs, while `source.link`, `source.category`, and `source.generator` serialize using Atom attribute/value conventions.
+
+Atom content no longer emits `xml:base` automatically from `entry.id`. If you need `xml:base`, set `content.base` explicitly on object-form content.
 ````

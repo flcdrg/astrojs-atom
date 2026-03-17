@@ -118,6 +118,8 @@ const inlineContent = z.object({
   value: z.string(),
   /** Content type (optional) */
   type: z.string().optional(),
+  /** Optional xml:base for resolving relative IRIs within the content */
+  base: uriReference.optional(),
   /** Source URL is not allowed for inline content */
   src: z.never().optional(),
 });
@@ -127,6 +129,8 @@ const externalContent = z.object({
   src: uriReference,
   /** Content type (optional) */
   type: z.string().optional(),
+  /** Optional xml:base for resolving relative IRIs within the content */
+  base: uriReference.optional(),
   /** Inline value is not allowed when src is provided */
   value: z.never().optional(),
 });
