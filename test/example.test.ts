@@ -1,5 +1,28 @@
-import getAtomResponse, { getAtomString } from "../src/index";
+import getAtomResponse, { getAtomString, type AtomFeedOptions } from "../src/index";
 import { expect, test } from "vitest";
+
+function createValidFeed(): AtomFeedOptions {
+    return {
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [
+            {
+                title: "Test Item",
+                id: "https://example.com/item",
+                updated: "2023-10-01T00:00:00Z",
+                published: "2023-09-30T23:59:59-05:00",
+                source: {
+                    id: "https://example.com/source",
+                    title: "Source Feed",
+                    updated: "2023-09-30T23:00:00+01:00",
+                },
+                link: [{ href: "https://example.com/item", rel: "alternate" }],
+            },
+        ],
+    };
+}
 
 test('generates valid Atom feed', async () => {
     const result = await getAtomString({
@@ -169,4 +192,30 @@ test('can fall back to the legacy XML media type for feed responses', async () =
     });
 
     expect(response.headers.get("Content-Type")).toBe("application/xml; charset=utf-8");
+});
+
+test('accepts RFC 3339 timestamps for feed and entry date fields', async () => {
+    const feed = createValidFeed();
+    feed.updated = "2023-10-01T00:00:00+02:00";
+    feed.entry[0].updated = "2023-10-01T00:00:00Z";
+    feed.entry[0].published = "2023-09-30T23:59:59.123Z";
+    feed.entry[0].source!.updated = "2023-09-30T23:00:00-07:00";
+
+    const result = await getAtomString(feed);
+
+    expect(result).toContain("<updated>2023-10-01T00:00:00+02:00</updated>");
+    expect(result).toContain("<published>2023-09-30T23:59:59.123Z</published>");
+    expect(result).toContain("<updated>2023-09-30T23:00:00-07:00</updated>");
+});
+
+test.each([
+    ["updated", (feed: AtomFeedOptions) => { feed.updated = "2023-10-01"; }],
+    ["entry.0.updated", (feed: AtomFeedOptions) => { feed.entry[0].updated = "2023-10-01 00:00:00Z"; }],
+    ["entry.0.published", (feed: AtomFeedOptions) => { feed.entry[0].published = "2023-10-01T00:00:00"; }],
+    ["entry.0.source.updated", (feed: AtomFeedOptions) => { feed.entry[0].source!.updated = "not-a-date"; }],
+])('rejects non-RFC3339 timestamps for %s', async (path, mutateFeed) => {
+    const feed = createValidFeed();
+    mutateFeed(feed);
+
+    await expect(getAtomString(feed)).rejects.toThrow(path);
 });
