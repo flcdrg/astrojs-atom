@@ -110,7 +110,7 @@ const source = z.object({
   /** Rights information (optional) */
   rights: textConstruct.optional(),
   /** Subtitle for the source feed (optional) */
-  subtitle: z.string().optional(),
+  subtitle: textConstruct.optional(),
 });
 
 const inlineContent = z.object({
