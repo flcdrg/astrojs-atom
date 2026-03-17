@@ -1,6 +1,24 @@
 import { z } from 'astro/zod';
 
 const rfc3339DateTime = z.string().datetime({ offset: true });
+const uriReference = z.string().min(1).refine((value) => {
+  if (/[\u0000-\u001F\u007F\s]/.test(value)) {
+    return false;
+  }
+
+  if (/^[A-Za-z][A-Za-z\d+.-]*:/.test(value)) {
+    return true;
+  }
+
+  try {
+    new URL(value, 'http://example.com');
+    return true;
+  } catch {
+    return false;
+  }
+}, {
+  message: 'Invalid URI reference',
+});
 
 // Atom Text Construct (for title, summary, rights, etc.)
 const textConstruct = z.union([
@@ -18,7 +36,7 @@ const person = z.object({
   /** Human-readable name for the person (required) */
   name: z.string(),
   /** Home page for the person (optional) */
-  uri: z.string().url().optional(),
+  uri: uriReference.optional(),
   /** Email address for the person (optional) */
   email: z.string().email().optional(),
 });
@@ -26,7 +44,7 @@ const person = z.object({
 // Atom Link construct
 const link = z.object({
   /** URI of the referenced resource (required) */
-  href: z.string().url(),
+  href: uriReference,
   /** Relationship type (optional) */
   rel: z.string().optional(),
   /** Media type (optional) */
@@ -52,7 +70,7 @@ const category = z.object({
 // Atom Generator construct
 const generator = z.object({
   /** URI for the generator (optional) */
-  uri: z.string().url().optional(),
+  uri: uriReference.optional(),
   /** Version of the generator (optional) */
   version: z.string().optional(),
   /** Name of the generator (required) */
@@ -98,7 +116,7 @@ const inlineContent = z.object({
 
 const externalContent = z.object({
   /** Source URL for externally hosted content (required) */
-  src: z.string().url(),
+  src: uriReference,
   /** Content type (optional) */
   type: z.string().optional(),
   /** Inline value is not allowed when src is provided */
