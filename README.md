@@ -251,4 +251,6 @@ The Media RSS namespace (`xmlns:media="http://search.yahoo.com/mrss/"`) is autom
 ## Validation
 
 To validate your Atom feed, use the [W3C Feed Validation Service](https://validator.w3.org/feed/).
+
+The library also validates Atom date-time fields against RFC 3339 during schema parsing. `feed.updated`, `entry.updated`, `entry.published`, and `source.updated` must include a full date-time with either `Z` or an explicit UTC offset.
 ````

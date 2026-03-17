@@ -1,5 +1,7 @@
 import { z } from 'astro/zod';
 
+const rfc3339DateTime = z.string().datetime({ offset: true });
+
 // Atom Text Construct (for title, summary, rights, etc.)
 const textConstruct = z.union([
   z.string(),
@@ -64,7 +66,7 @@ const source = z.object({
   /** Title of the source feed (required) */
   title: textConstruct,
   /** Last updated timestamp (required, RFC 3339) */
-  updated: z.string(),
+  updated: rfc3339DateTime,
   /** Authors of the source feed (optional) */
   author: z.array(person).optional(),
   /** Links associated with the source feed (optional) */
@@ -133,7 +135,7 @@ export const atomEntrySchema = z.object({
   /** Title of the entry (required) */
   title: textConstruct,
   /** Last updated timestamp (required, RFC 3339) */
-  updated: z.string(),
+  updated: rfc3339DateTime,
   /** Authors of the entry (optional) */
   author: z.array(person).optional(),
   /** Links associated with the entry (optional) */
@@ -143,7 +145,7 @@ export const atomEntrySchema = z.object({
   /** Contributors to the entry (optional) */
   contributor: z.array(person).optional(),
   /** Initial creation or first availability (optional, RFC 3339) */
-  published: z.string().optional(),
+  published: rfc3339DateTime.optional(),
   /** Rights information (optional) */
   rights: textConstruct.optional(),
   /** Source feed for republished entries (optional) */
@@ -165,7 +167,7 @@ export const atomSchema = z.object({
   /** Title of the feed (required) */
   title: textConstruct,
   /** Last updated timestamp (required, RFC 3339) */
-  updated: z.string(),
+  updated: rfc3339DateTime,
   /** Authors of the feed (optional, required if not all entries have an author) */
   author: z.array(person).optional(),
   /** Links associated with the feed (optional) */
