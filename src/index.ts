@@ -31,6 +31,7 @@ export type AtomFeedOptions = z.infer<typeof atomSchema> & {
   xmlns?: Record<string, string>;
   lang?: string; // Add lang option to specify xml:lang attribute
   useLegacyXmlContentType?: boolean;
+  sortEntriesByUpdated?: boolean;
 };
 
 type AtomTextConstruct = string | {
@@ -256,11 +257,11 @@ export default async function getAtomResponse(atomOptions: AtomFeedOptions): Pro
 
 export async function getAtomString(atomOptions: AtomFeedOptions): Promise<string> {
   // Extract non-schema options
-  const { stylesheet, xmlns, lang, ...schemaOptions } = atomOptions;
+  const { stylesheet, xmlns, lang, sortEntriesByUpdated, ...schemaOptions } = atomOptions;
   delete schemaOptions.useLegacyXmlContentType;
   const validated = await validateAtomOptions(schemaOptions);
   // Pass through stylesheet, xmlns and lang for XML generation
-  return await generateAtom({ ...validated, stylesheet, xmlns, lang });
+  return await generateAtom({ ...validated, stylesheet, xmlns, lang, sortEntriesByUpdated });
 }
 
 async function validateAtomOptions(atomOptions: z.infer<typeof atomSchema>) {
@@ -286,6 +287,7 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
   stylesheet?: string | boolean; 
   xmlns?: Record<string, string>;
   lang?: string; // Add lang parameter
+  sortEntriesByUpdated?: boolean;
 }): Promise<string> {
   const xmlOptions = {
     ignoreAttributes: false,
@@ -360,12 +362,15 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
   }
 
   // Entries
-  root.feed.entry = atomOptions.entry
-    .sort((a, b) => {
-      const aUpdated = new Date(a.updated).getTime();
-      const bUpdated = new Date(b.updated).getTime();
-      return bUpdated - aUpdated;
-    })
+  const entries = atomOptions.sortEntriesByUpdated
+    ? [...atomOptions.entry].sort((a, b) => {
+        const aUpdated = new Date(a.updated).getTime();
+        const bUpdated = new Date(b.updated).getTime();
+        return bUpdated - aUpdated;
+      })
+    : atomOptions.entry;
+
+  root.feed.entry = entries
     .map((entry) => {
       const e: Record<string, unknown> = {
         id: entry.id,

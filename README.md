@@ -96,9 +96,12 @@ export async function GET(context) {
 | `xmlns` | `object` | Custom XML namespaces to include |
 | `stylesheet` | `string` | URL to an XSL stylesheet |
 | `useLegacyXmlContentType` | `boolean` | Makes `getAtomResponse()` use the legacy `application/xml; charset=utf-8` header instead of the default Atom media type |
+| `sortEntriesByUpdated` | `boolean` | When `true`, sorts entries by `updated` descending before serialization. By default, entry order is preserved as provided |
 | `customData` | `string` | Custom XML to include in the feed |
 
 `getAtomResponse()` now returns `Content-Type: application/atom+xml; charset=utf-8` by default. If you need the previous header for compatibility with an existing consumer, set `useLegacyXmlContentType: true`.
+
+Feed entries preserve the input order by default. If you want the previous behavior of sorting entries by `updated` descending during generation, set `sortEntriesByUpdated: true`.
 
 ### Entry Properties
 
