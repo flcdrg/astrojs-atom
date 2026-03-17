@@ -333,6 +333,65 @@ test('rejects non-numeric Atom link lengths', async () => {
     })).rejects.toThrow("link.0.length");
 });
 
+test('allows entries to satisfy Atom author requirements directly or via source', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        entry: [
+            {
+                title: "Direct Author Entry",
+                id: "https://example.com/direct-author",
+                updated: "2023-10-02T00:00:00Z",
+                author: [{ name: "Entry Author" }],
+                link: [{ href: "https://example.com/direct-author", rel: "alternate" }],
+            },
+            {
+                title: "Source Author Entry",
+                id: "https://example.com/source-author",
+                updated: "2023-10-03T00:00:00Z",
+                source: {
+                    id: "https://example.com/source",
+                    title: "Source Feed",
+                    updated: "2023-10-01T00:00:00Z",
+                    author: [{ name: "Source Author" }],
+                },
+                link: [{ href: "https://example.com/source-author", rel: "alternate" }],
+            },
+        ],
+    });
+
+    expect(result).toContain("<name>Entry Author</name>");
+    expect(result).toContain("<name>Source Author</name>");
+});
+
+test('rejects feeds whose entries lack any Atom author source', async () => {
+    try {
+        await getAtomString({
+            title: "Test Feed",
+            id: "https://example.com/",
+            updated: "2023-10-01T00:00:00Z",
+            entry: [
+                {
+                    title: "Missing Author Entry",
+                    id: "https://example.com/missing-author",
+                    updated: "2023-10-02T00:00:00Z",
+                    link: [{ href: "https://example.com/missing-author", rel: "alternate" }],
+                },
+            ],
+        });
+
+        throw new Error("Expected author validation to fail");
+    } catch (error) {
+        if (!(error instanceof Error)) {
+            throw error;
+        }
+
+        expect(error.message).toContain("entry.0.author");
+        expect(error.message).toContain("(author)");
+    }
+});
+
 test('uses the Atom media type for feed responses by default', async () => {
     const response = await getAtomResponse({
         title: "Test Feed",

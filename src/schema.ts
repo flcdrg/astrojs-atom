@@ -45,6 +45,10 @@ const person = z.object({
   email: z.string().email().optional(),
 });
 
+function hasAuthor(persons?: Array<z.infer<typeof person>>) {
+  return Boolean(persons?.length);
+}
+
 // Atom Link construct
 const link = z.object({
   /** URI of the referenced resource (required) */
@@ -194,8 +198,7 @@ export const atomEntrySchema = z.object({
   customData: z.string().optional(),
 });
 
-// Atom Feed schema
-export const atomSchema = z.object({
+const atomSchemaBase = z.object({
   /** Unique identifier for the feed (required) */
   id: z.string(),
   /** Title of the feed (required) */
@@ -224,4 +227,37 @@ export const atomSchema = z.object({
   entry: z.array(atomEntrySchema),
   /** Custom XML data for the feed (optional) */
   customData: z.string().optional(),
+});
+
+// Atom Feed schema
+export const atomSchema = atomSchemaBase.superRefine((feed, ctx) => {
+  const feedHasAuthor = hasAuthor(feed.author);
+
+  feed.entry.forEach((entry, index) => {
+    const entryHasAuthor = feedHasAuthor
+      || hasAuthor(entry.author)
+      || hasAuthor(entry.source?.author);
+
+    if (!entryHasAuthor) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Entry author is required when no feed author or source author is present',
+        path: ['entry', index, 'author'],
+      });
+    }
+  });
+
+  if (!feedHasAuthor) {
+    const allEntriesProvideAuthor = feed.entry.every((entry) =>
+      hasAuthor(entry.author) || hasAuthor(entry.source?.author)
+    );
+
+    if (!allEntriesProvideAuthor) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Feed author is required unless every entry provides an author directly or via source',
+        path: ['author'],
+      });
+    }
+  }
 });
