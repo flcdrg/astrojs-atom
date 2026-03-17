@@ -142,6 +142,51 @@ test('wraps xhtml subtitle text constructs in an XHTML div', async () => {
     expect(result).toContain("<strong>Subtitle</strong>");
 });
 
+test('serializes source metadata with the same Atom construct mappings', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [
+            {
+                title: "Republished Entry",
+                id: "https://example.com/item",
+                updated: "2023-10-02T00:00:00Z",
+                link: [{ href: "https://example.com/item", rel: "alternate" }],
+                source: {
+                    id: "https://example.com/source",
+                    title: { value: "<em>Source Feed</em>", type: "html" },
+                    updated: "2023-10-01T12:00:00Z",
+                    subtitle: { value: "<p><strong>Source Subtitle</strong></p>", type: "xhtml" },
+                    rights: { value: "<p>Source rights</p>", type: "html" },
+                    author: [{ name: "Source Author" }],
+                    contributor: [{ name: "Source Contributor" }],
+                    link: [{ href: "/source", rel: "self", length: 1234 }],
+                    category: [{ term: "republished", label: "Republished" }],
+                    generator: {
+                        value: "Source Generator",
+                        uri: "urn:example:source-generator",
+                        version: "1.0",
+                    },
+                },
+            },
+        ],
+    });
+
+    expect(result).toContain('<title type="html">&lt;em&gt;Source Feed&lt;/em&gt;</title>');
+    expect(result).toContain('<subtitle type="xhtml">');
+    expect(result).toContain('<div xmlns="http://www.w3.org/1999/xhtml">');
+    expect(result).toContain('<rights type="html">&lt;p&gt;Source rights&lt;/p&gt;</rights>');
+    expect(result).toContain('<generator uri="urn:example:source-generator" version="1.0">Source Generator</generator>');
+    expect(result).toContain('<link href="/source" rel="self" length="1234"/>');
+    expect(result).toContain('<category term="republished" label="Republished"/>');
+    expect(result).not.toContain('<title><value>');
+    expect(result).not.toContain('<subtitle><value>');
+    expect(result).not.toContain('<rights><value>');
+    expect(result).not.toContain('<generator><value>');
+});
+
 test('wraps xhtml text constructs and content in an XHTML div', async () => {
     const result = await getAtomString({
         title: "Test Feed",

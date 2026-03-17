@@ -124,7 +124,7 @@ Each entry in the `entry` array can have the following properties:
 | `contributor` | `Array` | Contributors to the entry |
 | `published` | `string` | Publication date (RFC 3339 format) |
 | `rights` | `string` or `object` | Entry-specific copyright information |
-| `source` | `object` | Source feed information for republished entries |
+| `source` | `object` | Source feed information for republished entries. Shared Atom metadata inside `source` uses the same construct handling as the feed, including text constructs for `title`, `subtitle`, and `rights` |
 | `customData` | `string` | Custom XML to include in the entry |
 | `thumbnail` | `object` | Thumbnail image for the entry |
 
@@ -280,4 +280,6 @@ URI-based Atom fields such as `link.href`, `author.uri`, `generator.uri`, and `c
 Atom `link.length` values are validated as non-negative byte counts. You can pass either a number like `1234` or a numeric string like `"1234"`.
 
 Atom author requirements are also validated across the whole feed: if the feed has no top-level `author`, then every entry must provide author data either directly on the entry or through its `source`.
+
+`entry.source` metadata is serialized with the same Atom construct mappings as top-level feed metadata, so `source.title`, `source.subtitle`, and `source.rights` support text constructs, while `source.link`, `source.category`, and `source.generator` serialize using Atom attribute/value conventions.
 ````

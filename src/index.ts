@@ -150,6 +150,43 @@ function serializeTextConstruct(
   };
 }
 
+function serializeGenerator(generator: NonNullable<AtomGenerator>) {
+  const { value, ...attributes } = generator;
+
+  return {
+    ...toXmlAttributes(attributes),
+    '#text': value,
+  };
+}
+
+function serializeLinks(links: AtomLink[]) {
+  return links.map((link) => toXmlAttributes(link));
+}
+
+function serializeCategories(categories: AtomCategory[]) {
+  return categories.map((category) => toXmlAttributes(category));
+}
+
+function serializeSource(source: NonNullable<AtomSource>, parser: XMLParser) {
+  const serializedSource: Record<string, unknown> = {
+    id: source.id,
+    title: serializeTextConstruct(source.title, parser),
+    updated: source.updated,
+  };
+
+  if (source.author) serializedSource.author = source.author;
+  if (source.link) serializedSource.link = serializeLinks(source.link);
+  if (source.category) serializedSource.category = serializeCategories(source.category);
+  if (source.contributor) serializedSource.contributor = source.contributor;
+  if (source.generator) serializedSource.generator = serializeGenerator(source.generator);
+  if (source.icon) serializedSource.icon = source.icon;
+  if (source.logo) serializedSource.logo = source.logo;
+  if (source.rights) serializedSource.rights = serializeTextConstruct(source.rights, parser);
+  if (source.subtitle) serializedSource.subtitle = serializeTextConstruct(source.subtitle, parser);
+
+  return serializedSource;
+}
+
 function serializeContentConstruct(
   content: AtomContentConstruct,
   entryId: string,
@@ -304,26 +341,14 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
   
   // Use the provided generator or the default generator
   const generator = atomOptions.generator || defaultGenerator;
-  const { value, ...attrs } = generator;
-  root.feed.generator = {
-    ...toXmlAttributes(attrs),
-    '#text': value
-  };
+  root.feed.generator = serializeGenerator(generator);
 
   if (atomOptions.author) root.feed.author = atomOptions.author;
   if (atomOptions.link) {
-    root.feed.link = atomOptions.link.map((l) =>
-      Object.fromEntries(
-        Object.entries(l).map(([k, v]) => ["@_" + k, v])
-      )
-    );
+    root.feed.link = serializeLinks(atomOptions.link);
   }
   if (atomOptions.category) {
-    root.feed.category = atomOptions.category.map((c) =>
-      Object.fromEntries(
-        Object.entries(c).map(([k, v]) => ["@_" + k, v])
-      )
-    );
+    root.feed.category = serializeCategories(atomOptions.category);
   }
   if (atomOptions.contributor) root.feed.contributor = atomOptions.contributor;
 
@@ -343,90 +368,78 @@ async function generateAtom(atomOptions: z.infer<typeof atomSchema> & {
       return bUpdated - aUpdated;
     })
     .map((entry) => {
-    const e: Record<string, unknown> = {
-      id: entry.id,
-      updated: entry.updated,
-    };
+      const e: Record<string, unknown> = {
+        id: entry.id,
+        updated: entry.updated,
+      };
 
-    // Handle title as text construct
-    e.title = serializeTextConstruct(entry.title, parser);
-    
-    if (entry.author) e.author = entry.author;
-    if (entry.link) {
-      e.link = entry.link.map((l) =>
-        Object.fromEntries(
-          Object.entries(l).map(([k, v]) => ["@_" + k, v])
-        )
-      );
-    }
-    if (entry.category) {
-      e.category = entry.category.map((c) =>
-        Object.fromEntries(
-          Object.entries(c).map(([k, v]) => ["@_" + k, v])
-        )
-      );
-    }
-    if (entry.contributor) e.contributor = entry.contributor;
-    if (entry.published) e.published = entry.published;
-    if (entry.rights) {
-      e.rights = serializeTextConstruct(entry.rights, parser);
-    }
-    if (entry.source) e.source = entry.source;
-    if (entry.summary) {
-      e.summary = serializeTextConstruct(entry.summary, parser);
-    }
-    if (entry.content) {
-      e.content = serializeContentConstruct(
-        entry.content,
-        entry.id,
-        parser,
-      );
-    }
-    if (typeof entry.customData === 'string') {
-      Object.assign(e, parser.parse(`<entry>${entry.customData}</entry>`).entry);
-    }
+      // Handle title as text construct
+      e.title = serializeTextConstruct(entry.title, parser);
+      
+      if (entry.author) e.author = entry.author;
+      if (entry.link) e.link = serializeLinks(entry.link);
+      if (entry.category) e.category = serializeCategories(entry.category);
+      if (entry.contributor) e.contributor = entry.contributor;
+      if (entry.published) e.published = entry.published;
+      if (entry.rights) {
+        e.rights = serializeTextConstruct(entry.rights, parser);
+      }
+      if (entry.source) e.source = serializeSource(entry.source, parser);
+      if (entry.summary) {
+        e.summary = serializeTextConstruct(entry.summary, parser);
+      }
+      if (entry.content) {
+        e.content = serializeContentConstruct(
+          entry.content,
+          entry.id,
+          parser,
+        );
+      }
+      if (typeof entry.customData === 'string') {
+        Object.assign(e, parser.parse(`<entry>${entry.customData}</entry>`).entry);
+      }
     
     // Handle media thumbnail and content
-    if (entry.thumbnail) {
-      // Add the media namespace if not already included in the feed namespaces
-      if (!atomOptions.xmlns || !atomOptions.xmlns['media']) {
-        if (!root.feed['@_xmlns:media']) {
-          root.feed['@_xmlns:media'] = 'http://search.yahoo.com/mrss/';
+      if (entry.thumbnail) {
+        // Add the media namespace if not already included in the feed namespaces
+        if (!atomOptions.xmlns || !atomOptions.xmlns['media']) {
+          if (!root.feed['@_xmlns:media']) {
+            root.feed['@_xmlns:media'] = 'http://search.yahoo.com/mrss/';
+          }
         }
+        
+        // Access the thumbnail properties safely
+        const url = (entry.thumbnail as any).url as string;
+        const medium = (entry.thumbnail as any).medium as string | undefined;
+        const width = (entry.thumbnail as any).width as number | undefined;
+        const height = (entry.thumbnail as any).height as number | undefined;
+        const time = (entry.thumbnail as any).time as string | undefined;
+        
+        // Create media:thumbnail element with type assertion
+        e['media:thumbnail'] = {
+          '@_xmlns:media': 'http://search.yahoo.com/mrss/',
+          '@_url': url
+        } as Record<string, any>;
+        
+        // Add optional attributes to thumbnail
+        if (width !== undefined) (e['media:thumbnail'] as Record<string, any>)['@_width'] = width;
+        if (height !== undefined) (e['media:thumbnail'] as Record<string, any>)['@_height'] = height;
+        if (time !== undefined) (e['media:thumbnail'] as Record<string, any>)['@_time'] = time;
+        
+        // Create media:content element with type assertion
+        e['media:content'] = {
+          '@_medium': medium || "image",
+          '@_xmlns:media': 'http://search.yahoo.com/mrss/',
+          '@_url': url
+        } as Record<string, any>;
+              
+        // Add optional attributes to content if present
+        if (width !== undefined) (e['media:content'] as Record<string, any>)['@_width'] = width;
+        if (height !== undefined) (e['media:content'] as Record<string, any>)['@_height'] = height;
       }
       
-      // Access the thumbnail properties safely
-      const url = (entry.thumbnail as any).url as string;
-      const medium = (entry.thumbnail as any).medium as string | undefined;
-      const width = (entry.thumbnail as any).width as number | undefined;
-      const height = (entry.thumbnail as any).height as number | undefined;
-      const time = (entry.thumbnail as any).time as string | undefined;
-      
-      // Create media:thumbnail element with type assertion
-      e['media:thumbnail'] = {
-        '@_xmlns:media': 'http://search.yahoo.com/mrss/',
-        '@_url': url
-      } as Record<string, any>;
-      
-      // Add optional attributes to thumbnail
-      if (width !== undefined) (e['media:thumbnail'] as Record<string, any>)['@_width'] = width;
-      if (height !== undefined) (e['media:thumbnail'] as Record<string, any>)['@_height'] = height;
-      if (time !== undefined) (e['media:thumbnail'] as Record<string, any>)['@_time'] = time;
-      
-      // Create media:content element with type assertion
-      e['media:content'] = {
-        '@_medium': medium || "image",
-        '@_xmlns:media': 'http://search.yahoo.com/mrss/',
-        '@_url': url
-      } as Record<string, any>;
-            
-      // Add optional attributes to content if present
-      if (width !== undefined) (e['media:content'] as Record<string, any>)['@_width'] = width;
-      if (height !== undefined) (e['media:content'] as Record<string, any>)['@_height'] = height;
-    }
-    
-    return e;
-  });
+      return e;
+    });
 
   return new XMLBuilder(xmlOptions).build(root);
 }
