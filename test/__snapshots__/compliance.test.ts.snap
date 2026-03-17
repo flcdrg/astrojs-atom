@@ -1,0 +1,165 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Atom compliance serialization > declares the media namespace once at the feed level when thumbnails are included 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+  <id>https://example.com/</id>
+  <title>Test Feed</title>
+  <updated>2023-10-01T00:00:00Z</updated>
+  <generator uri="https://github.com/flcdrg/astrojs-atom" version="1.0.0">astrojs-atom</generator>
+  <author>
+    <name>Test Author</name>
+  </author>
+  <entry>
+    <id>https://example.com/item</id>
+    <updated>2023-10-01T00:00:00Z</updated>
+    <title>Thumbnail Entry</title>
+    <link href="https://example.com/item" rel="alternate"/>
+    <media:thumbnail url="https://example.com/thumbnail.png"/>
+    <media:content medium="image" url="https://example.com/thumbnail.png"/>
+  </entry>
+</feed>
+"
+`;
+
+exports[`Atom compliance serialization > serializes content variants according to Atom rules 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>https://example.com/</id>
+  <title>Test Feed</title>
+  <updated>2023-10-01T00:00:00Z</updated>
+  <generator uri="https://github.com/flcdrg/astrojs-atom" version="1.0.0">astrojs-atom</generator>
+  <author>
+    <name>Test Author</name>
+  </author>
+  <entry>
+    <id>https://example.com/xml</id>
+    <updated>2023-10-02T00:00:00Z</updated>
+    <title>XML Entry</title>
+    <link href="https://example.com/xml" rel="alternate"/>
+    <content type="application/xml">
+      <widget>
+        <part>Hi</part>
+      </widget>
+    </content>
+  </entry>
+  <entry>
+    <id>https://example.com/binary</id>
+    <updated>2023-10-01T00:00:00Z</updated>
+    <title>Binary Entry</title>
+    <link href="https://example.com/binary" rel="alternate"/>
+    <content type="application/octet-stream">aGVsbG8=</content>
+  </entry>
+  <entry>
+    <id>https://example.com/external</id>
+    <updated>2023-10-03T00:00:00Z</updated>
+    <title>External Content Entry</title>
+    <link href="https://example.com/external" rel="alternate"/>
+    <summary>External content summary</summary>
+    <content src="https://example.com/body.html" type="text/html"/>
+  </entry>
+  <entry>
+    <id>https://example.com/base</id>
+    <updated>2023-10-04T00:00:00Z</updated>
+    <title>Base Entry</title>
+    <link href="https://example.com/base" rel="alternate"/>
+    <content type="html" xml:base="https://cdn.example.com/articles/">&lt;p&gt;Body&lt;/p&gt;</content>
+  </entry>
+</feed>
+"
+`;
+
+exports[`Atom compliance serialization > serializes html and xhtml constructs according to Atom rules 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>https://example.com/</id>
+  <title type="html">&lt;em&gt;Feed&lt;/em&gt;</title>
+  <updated>2023-10-01T00:00:00Z</updated>
+  <subtitle type="xhtml">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <p>
+        <strong>Subtitle</strong>
+      </p>
+    </div>
+  </subtitle>
+  <generator uri="https://github.com/flcdrg/astrojs-atom" version="1.0.0">astrojs-atom</generator>
+  <author>
+    <name>Test Author</name>
+  </author>
+  <entry>
+    <id>https://example.com/html</id>
+    <updated>2023-10-01T00:00:00Z</updated>
+    <title type="html">&lt;strong&gt;HTML Entry&lt;/strong&gt;</title>
+    <link href="https://example.com/html" rel="alternate"/>
+    <summary type="html">&lt;p&gt;Summary&lt;/p&gt;</summary>
+    <content type="html">&lt;p&gt;Body&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <id>https://example.com/xhtml</id>
+    <updated>2023-10-02T00:00:00Z</updated>
+    <title type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>
+          <em>XHTML Entry</em>
+        </p>
+      </div>
+    </title>
+    <link href="https://example.com/xhtml" rel="alternate"/>
+    <summary type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>Summary</p>
+      </div>
+    </summary>
+    <content type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>
+          <strong>Body</strong>
+        </p>
+      </div>
+    </content>
+  </entry>
+</feed>
+"
+`;
+
+exports[`Atom compliance serialization > serializes source metadata with Atom construct mappings 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>https://example.com/</id>
+  <title>Test Feed</title>
+  <updated>2023-10-01T00:00:00Z</updated>
+  <generator uri="https://github.com/flcdrg/astrojs-atom" version="1.0.0">astrojs-atom</generator>
+  <author>
+    <name>Test Author</name>
+  </author>
+  <entry>
+    <id>https://example.com/item</id>
+    <updated>2023-10-02T00:00:00Z</updated>
+    <title>Republished Entry</title>
+    <link href="https://example.com/item" rel="alternate"/>
+    <source>
+      <id>https://example.com/source</id>
+      <title type="html">&lt;em&gt;Source Feed&lt;/em&gt;</title>
+      <updated>2023-10-01T12:00:00Z</updated>
+      <author>
+        <name>Source Author</name>
+      </author>
+      <link href="/source" rel="self" length="1234"/>
+      <category term="republished" label="Republished"/>
+      <contributor>
+        <name>Source Contributor</name>
+      </contributor>
+      <generator uri="urn:example:source-generator" version="1.0">Source Generator</generator>
+      <rights type="html">&lt;p&gt;Source rights&lt;/p&gt;</rights>
+      <subtitle type="xhtml">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+          <p>
+            <strong>Source Subtitle</strong>
+          </p>
+        </div>
+      </subtitle>
+    </source>
+  </entry>
+</feed>
+"
+`;
