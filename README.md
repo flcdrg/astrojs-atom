@@ -278,4 +278,6 @@ The library also validates Atom date-time fields against RFC 3339 during schema 
 URI-based Atom fields such as `link.href`, `author.uri`, `generator.uri`, and `content.src` accept Atom-compatible URI or URI-reference values like `urn:uuid:...` and `/feed`, not just absolute URLs.
 
 Atom `link.length` values are validated as non-negative byte counts. You can pass either a number like `1234` or a numeric string like `"1234"`.
+
+Atom author requirements are also validated across the whole feed: if the feed has no top-level `author`, then every entry must provide author data either directly on the entry or through its `source`.
 ````
