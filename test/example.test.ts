@@ -90,6 +90,31 @@ test('generates valid Atom feed', async () => {
     expect(result).toContain('xml:lang="en-AU"');
 });
 
+test('declares the media namespace once at the feed level when thumbnails are included', async () => {
+    const result = await getAtomString({
+        title: "Test Feed",
+        id: "https://example.com/",
+        updated: "2023-10-01T00:00:00Z",
+        author: [{ name: "Test Author" }],
+        entry: [
+            {
+                title: "Thumbnail Entry",
+                id: "https://example.com/item",
+                updated: "2023-10-01T00:00:00Z",
+                link: [{ href: "https://example.com/item", rel: "alternate" }],
+                thumbnail: {
+                    url: "https://example.com/thumbnail.png"
+                }
+            },
+        ],
+    });
+
+    expect(result).toContain('<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">');
+    expect(result).toContain('<media:thumbnail url="https://example.com/thumbnail.png"/>');
+    expect(result).toContain('<media:content medium="image" url="https://example.com/thumbnail.png"/>');
+    expect((result.match(/xmlns:media=/g) ?? [])).toHaveLength(1);
+});
+
 test('preserves entry input order by default', async () => {
     const result = await getAtomString({
         title: "Test Feed",
