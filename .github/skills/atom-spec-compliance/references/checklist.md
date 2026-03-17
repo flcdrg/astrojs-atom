@@ -34,4 +34,4 @@ Use this checklist when reviewing or changing Atom behavior in this repository.
 - Schema and serialization kept aligned
 - README updated if public behavior changed
 - Tests added or updated intentionally
-- `pnpm test` and `pnpm build` completed
+- `pnpm build` and `pnpm exec vitest run` completed
