@@ -31,7 +31,7 @@
 ## PowerShell Notes
 - When running Git commands in PowerShell, quote ref syntax like `'@{upstream}'` so PowerShell does not parse it as a hash literal.
 - Prefer simple statement separators like `;` when mixing CLI commands with PowerShell expressions or redirection in one command.
-- When building multi-line PowerShell command strings for Git operations, use PowerShell newlines with `` `n `` instead of embedding raw line breaks inside quoted arguments.
+- When building multi-line PowerShell command strings for Git operations, use PowerShell newlines with `` `n `` instead of embedding raw line breaks or `\n` inside quoted arguments.
 - Use `2>$null` to suppress expected stderr noise from probe commands such as checking whether a PR already exists.
 
 ## Pitfalls
