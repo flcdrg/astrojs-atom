@@ -6,7 +6,7 @@ exports[`Atom compliance serialization > declares the media namespace once at th
   <id>https://example.com/</id>
   <title>Test Feed</title>
   <updated>2023-10-01T00:00:00Z</updated>
-  <generator uri="https://github.com/flcdrg/astrojs-atom" version="1.0.0">astrojs-atom</generator>
+  <generator uri="https://example.com/generator" version="1.0">Test Generator</generator>
   <author>
     <name>Test Author</name>
   </author>
@@ -28,7 +28,7 @@ exports[`Atom compliance serialization > serializes content variants according t
   <id>https://example.com/</id>
   <title>Test Feed</title>
   <updated>2023-10-01T00:00:00Z</updated>
-  <generator uri="https://github.com/flcdrg/astrojs-atom" version="1.0.0">astrojs-atom</generator>
+  <generator uri="https://example.com/generator" version="1.0">Test Generator</generator>
   <author>
     <name>Test Author</name>
   </author>
@@ -82,7 +82,7 @@ exports[`Atom compliance serialization > serializes html and xhtml constructs ac
       </p>
     </div>
   </subtitle>
-  <generator uri="https://github.com/flcdrg/astrojs-atom" version="1.0.0">astrojs-atom</generator>
+  <generator uri="https://example.com/generator" version="1.0">Test Generator</generator>
   <author>
     <name>Test Author</name>
   </author>
@@ -128,7 +128,7 @@ exports[`Atom compliance serialization > serializes source metadata with Atom co
   <id>https://example.com/</id>
   <title>Test Feed</title>
   <updated>2023-10-01T00:00:00Z</updated>
-  <generator uri="https://github.com/flcdrg/astrojs-atom" version="1.0.0">astrojs-atom</generator>
+  <generator uri="https://example.com/generator" version="1.0">Test Generator</generator>
   <author>
     <name>Test Author</name>
   </author>

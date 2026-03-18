@@ -1,6 +1,12 @@
 import getAtomResponse, { atomSchema, getAtomString, type AtomFeedOptions } from "../src/index";
 import { describe, expect, test } from "vitest";
 
+const testGenerator = {
+    value: "Test Generator",
+    uri: "https://example.com/generator",
+    version: "1.0",
+};
+
 function createValidFeed(): AtomFeedOptions {
     return {
         title: "Test Feed",
@@ -31,6 +37,7 @@ describe('Atom compliance serialization', () => {
             subtitle: { value: "<p><strong>Subtitle</strong></p>", type: "xhtml" },
             id: "https://example.com/",
             updated: "2023-10-01T00:00:00Z",
+            generator: testGenerator,
             author: [{ name: "Test Author" }],
             entry: [
                 {
@@ -60,6 +67,7 @@ describe('Atom compliance serialization', () => {
             title: "Test Feed",
             id: "https://example.com/",
             updated: "2023-10-01T00:00:00Z",
+            generator: testGenerator,
             author: [{ name: "Test Author" }],
             entry: [
                 {
@@ -95,6 +103,7 @@ describe('Atom compliance serialization', () => {
             title: "Test Feed",
             id: "https://example.com/",
             updated: "2023-10-01T00:00:00Z",
+            generator: testGenerator,
             author: [{ name: "Test Author" }],
             entry: [
                 {
@@ -137,6 +146,7 @@ describe('Atom compliance serialization', () => {
             title: "Test Feed",
             id: "https://example.com/",
             updated: "2023-10-01T00:00:00Z",
+            generator: testGenerator,
             author: [{ name: "Test Author" }],
             entry: [
                 {
