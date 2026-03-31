@@ -1,5 +1,10 @@
-import type { z } from 'astro/zod';
-import type { AtomFeedOptions } from './index.js';
+type ErrorMapIssue = {
+	code: string;
+	path?: PropertyKey[];
+	message?: string;
+	input?: unknown;
+	expected?: unknown;
+};
 
 /** Normalize URL to its canonical form */
 export function createCanonicalURL(
@@ -38,16 +43,22 @@ function getUrlExtension(url: string) {
 	return lastDot > lastSlash ? url.slice(lastDot + 1) : '';
 }
 
-const flattenErrorPath = (errorPath: (string | number)[]) => errorPath.join('.');
+const flattenErrorPath = (errorPath: PropertyKey[]) => errorPath.map(String).join('.');
 
-export const errorMap: z.ZodErrorMap = (error, ctx) => {
-	if (error.code === 'invalid_type') {
-		const badKeyPath = JSON.stringify(flattenErrorPath(error.path));
-		if (error.received === 'undefined') {
+export function errorMap(issue: ErrorMapIssue) {
+	if (issue.code === 'invalid_type') {
+		const badKeyPath = JSON.stringify(flattenErrorPath(issue.path ?? []));
+		const received = typeof issue.input;
+		const expected = typeof issue.expected === 'string' ? issue.expected : String(issue.expected);
+
+		if (received === 'undefined') {
 			return { message: `${badKeyPath} is required.` };
-		} else {
-			return { message: `${badKeyPath} should be ${error.expected}, not ${error.received}.` };
 		}
+
+		return { message: `${badKeyPath} should be ${expected}, not ${received}.` };
 	}
-	return { message: ctx.defaultError };
-};
+
+	if (issue.message) {
+		return { message: issue.message };
+	}
+}
