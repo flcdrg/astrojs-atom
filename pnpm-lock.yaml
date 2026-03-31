@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       astro:
-        specifier: ^6.1.1
-        version: 6.1.1(@types/node@25.0.3)(rollup@4.60.1)(typescript@5.9.3)
+        specifier: ^6.1.2
+        version: 6.1.2(@types/node@25.0.3)(rollup@4.60.1)(typescript@5.9.3)
       fast-xml-parser:
         specifier: ^5.3.3
         version: 5.5.9
@@ -671,8 +671,8 @@ packages:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
     engines: {node: '>=12'}
 
-  astro@6.1.1:
-    resolution: {integrity: sha512-vq8sHpu1JsY1fWAunn+tdKNbVDmLQNiVdyuGsVT2csgITdFGXXVAyEXFWc1DzkMN0ehElPeiHnqItyQOJK+GqA==}
+  astro@6.1.2:
+    resolution: {integrity: sha512-r3iIvmB6JvQxsdJLvapybKKq7Bojd1iQK6CCx5P55eRnXJIyUpHx/1UB/GdMm+em/lwaCUasxHCmIO0lCLV2uA==}
     engines: {node: '>=22.12.0', npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -2137,7 +2137,7 @@ snapshots:
 
   assertion-error@2.0.1: {}
 
-  astro@6.1.1(@types/node@25.0.3)(rollup@4.60.1)(typescript@5.9.3):
+  astro@6.1.2(@types/node@25.0.3)(rollup@4.60.1)(typescript@5.9.3):
     dependencies:
       '@astrojs/compiler': 3.0.1
       '@astrojs/internal-helpers': 0.8.0

@@ -4,6 +4,11 @@
 
 A library for generating [Atom syndication feeds](https://validator.w3.org/feed/docs/atom.html) in Astro projects. This is a fork of `@astrojs/rss` that implements the Atom feed format instead of RSS.
 
+## Compatibility
+
+- Astro `6.x`
+- Node `22.12.0` or newer
+
 ## Installation
 
 ```bash
@@ -16,6 +21,8 @@ yarn add astrojs-atom
 # Using pnpm
 pnpm install astrojs-atom
 ```
+
+This package uses `astro/zod`, so its schema behavior follows the Zod version bundled with your installed Astro version. With Astro 6, that means Zod 4 semantics.
 
 ## Usage
 

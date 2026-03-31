@@ -265,14 +265,16 @@ export async function getAtomString(atomOptions: AtomFeedOptions): Promise<strin
 }
 
 async function validateAtomOptions(atomOptions: z.infer<typeof atomSchema>) {
-  const parsedResult = await atomSchema.safeParseAsync(atomOptions, { errorMap });
+  const parsedResult = await atomSchema.safeParseAsync(atomOptions, {
+    error: (issue) => errorMap(issue),
+  });
   if (parsedResult.success) {
     return parsedResult.data;
   }
   const formattedError = new Error(
     [
       `[Atom] Invalid or missing options:`,
-      ...parsedResult.error.errors.map((zodError) => {
+      ...parsedResult.error.issues.map((zodError) => {
         const path = zodError.path.join('.');
         const message = `${zodError.message} (${path})`;
         return message;

@@ -37,4 +37,5 @@
 ## Pitfalls
 - The library mixes validation and serialization concerns closely, so seemingly small schema changes can alter generated XML or public typings.
 - Public API changes should be evaluated for downstream Astro usage shown in `README.md`.
+- Astro 6 brings Zod 4 behavior: prefer `safeParseAsync(..., { error })` over the removed per-parse `errorMap` option, and use `error.issues` instead of `error.errors`.
 - This repo contains helper scripts under `scripts/`, but they are not part of the runtime library surface.
