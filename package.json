@@ -1,6 +1,7 @@
 {
   "name": "astrojs-atom",
   "description": "Add Atom feeds to your Astro projects",
+  "keywords": ["astro-component", "utility", "atom", "rss"],
   "version": "1.0.1",
   "type": "module",
   "types": "./dist/index.d.ts",
@@ -10,6 +11,7 @@
     "type": "git",
     "url": "https://github.com/flcdrg/astrojs-atom.git"
   },
+  "homepage": "https://github.com/flcdrg/astrojs-atom",
   "exports": {
     ".": "./dist/index.js",
     "./package.json": "./package.json"
