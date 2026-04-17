@@ -39,4 +39,4 @@ jobs:
           # Publish this file to npm
           echo "Publishing $file to npm..."
 
-          pnpm publish "$file" --no-git-checks
+          pnpm publish "$file" --no-git-checks --access public --provenance
