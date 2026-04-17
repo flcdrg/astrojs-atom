@@ -1,7 +1,12 @@
 {
   "name": "astrojs-atom",
   "description": "Add Atom feeds to your Astro projects",
-  "keywords": ["astro-component", "utility", "atom", "rss"],
+  "keywords": [
+    "astro-component",
+    "utility",
+    "atom",
+    "rss"
+  ],
   "version": "1.0.1",
   "type": "module",
   "types": "./dist/index.d.ts",
