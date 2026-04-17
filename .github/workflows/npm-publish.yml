@@ -27,7 +27,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 10.33.0 # Need to specify version as we don't do a checkout here
+          version: 10.8.1 # Need to specify version as we don't do a checkout here
 
       # Download release artifacts
       - name: release-downloader
@@ -42,4 +42,4 @@ jobs:
           # Publish this file to npm
           echo "Publishing $file to npm..."
 
-          pnpm publish "$file" --no-git-checks --access public --provenance
+          pnpm publish "$file" --no-git-checks
