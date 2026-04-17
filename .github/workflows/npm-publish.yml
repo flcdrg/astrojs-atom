@@ -5,7 +5,7 @@ name: Node.js Package
 
 on:
   release:
-    types: [published]
+    types: [ published ]
   workflow_dispatch:
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@v5 # Don't upgrade to v6 until https://github.com/pnpm/action-setup/issues/225 is resolved
         with:
           version: 10.8.1 # Need to specify version as we don't do a checkout here
 
@@ -37,9 +37,16 @@ jobs:
           fileName: "*.tgz"
 
       - run: |
+          echo "pnpm version: $(pnpm --version)"
+          echo ""
+
+          ls -al *.tgz
+          echo ""
+
           # Find *.tgz file in the current directory
           file=$(ls *.tgz)
           # Publish this file to npm
           echo "Publishing $file to npm..."
 
           pnpm publish "$file" --no-git-checks
+        name: Publish to npm
