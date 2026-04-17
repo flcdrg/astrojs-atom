@@ -15,8 +15,6 @@ jobs:
       contents: read # for checkout
       id-token: write # for OIDC to get npm token
     environment: release
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/setup-node@v6
         with:
@@ -41,4 +39,4 @@ jobs:
           # Publish this file to npm
           echo "Publishing $file to npm..."
 
-          pnpm publish "$file" --no-git-checks --access public
+          pnpm publish "$file" --no-git-checks --access public --provenance
