@@ -25,7 +25,7 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v5 # Don't upgrade to v6 until https://github.com/pnpm/action-setup/issues/225 is resolved
+        uses: pnpm/action-setup@v6 # Don't upgrade to v6 until https://github.com/pnpm/action-setup/issues/225 is resolved
         with:
           version: 10.8.1 # Need to specify version as we don't do a checkout here
 
