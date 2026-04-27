@@ -31,7 +31,7 @@ jobs:
 
       # Download release artifacts
       - name: release-downloader
-        uses: robinraju/release-downloader@v1.12
+        uses: robinraju/release-downloader@v1.13
         with:
           releaseId: ${{ github.event.release.id }}
           fileName: "*.tgz"
