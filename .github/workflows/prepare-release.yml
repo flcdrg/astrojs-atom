@@ -1,0 +1,79 @@
+name: Prepare Release
+
+on:
+  workflow_run:
+    workflows: ["Node.js CI"]
+    branches: [main]
+    types: [completed]
+
+jobs:
+  prepare_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # for release drafter
+
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          cache: "pnpm"
+
+      - run: pnpm install
+
+      - run: pnpm exec nbgv cloud --all-vars
+
+      - name: gitversion
+        id: gitversion
+        run: |
+          echo "NBGV_SemVer2=$NBGV_SemVer2"
+          echo "NBGV_SemVer2=$NBGV_SemVer2" >> $GITHUB_OUTPUT
+
+      # download artifacts from the build workflow run
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: build-artifacts-22.x
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # dump version info
+      - name: Dump outputs
+        run: |
+          echo "NBGV_SemVer2=$NBGV_SemVer2"
+
+          printenv | sort
+
+      - uses: release-drafter/release-drafter@v7
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          version: ${{ steps.gitversion.outputs.NBGV_SemVer2 }}
+
+      - name: Remove existing release asset
+        uses: flcdrg/remove-release-asset-action@v5
+        with:
+          # The release id to remove asset from
+          release_id: ${{ steps.create_release.outputs.id }}
+          # The name of the asset you want to remove
+          asset_name: "*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - uses: ./.github/actions/upload-release-assets
+        with:
+          releaseId: ${{ steps.create_release.outputs.id }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          files: "*.tgz"
