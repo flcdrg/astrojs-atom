@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/node": "25.0.3",
     "@types/xml2js": "^0.4.14",
-    "nerdbank-gitversioning": "3.10.85",
+    "nerdbank-gitversioning": "3.10.91",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
     "vitest": "^4.0.17",
