@@ -1,5 +1,6 @@
 import { z } from 'astro/zod';
-import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
+import XMLBuilder from 'fast-xml-builder';
 import { atomSchema, atomEntrySchema } from './schema.js';
 import { errorMap } from './util.js';
 import { defaultGenerator } from './generator.js';
