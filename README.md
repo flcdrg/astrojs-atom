@@ -32,7 +32,7 @@ Create a new `.xml.js` or `.xml.ts` file in your Astro pages directory to genera
 // src/pages/atom.xml.js
 import { getAtomResponse } from 'astrojs-atom';
 
-export async function GET(context) {
+export function GET(context) {
   return getAtomResponse({
     // Required: Feed metadata
     title: "My Website",

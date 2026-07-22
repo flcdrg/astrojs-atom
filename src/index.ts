@@ -242,7 +242,7 @@ function serializeContentConstruct(
   };
 }
 
-export default async function getAtomResponse(atomOptions: AtomFeedOptions): Promise<Response> {
+export async function getAtomResponse(atomOptions: AtomFeedOptions): Promise<Response> {
   const atomString = await getAtomString(atomOptions);
   const contentType = atomOptions.useLegacyXmlContentType
     ? 'application/xml; charset=utf-8'
@@ -254,6 +254,8 @@ export default async function getAtomResponse(atomOptions: AtomFeedOptions): Pro
     },
   });
 }
+
+export default getAtomResponse;
 
 export async function getAtomString(atomOptions: AtomFeedOptions): Promise<string> {
   // Extract non-schema options
