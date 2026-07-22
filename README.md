@@ -32,7 +32,7 @@ Create a new `.xml.js` or `.xml.ts` file in your Astro pages directory to genera
 // src/pages/atom.xml.js
 import atom from 'astrojs-atom';
 
-// Alternatively you can export it explicitly
+// Alternatively you can import the function explicitly
 // import { getAtomResponse } from 'astrojs-atom';
 
 export function GET(context) {
