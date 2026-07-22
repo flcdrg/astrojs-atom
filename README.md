@@ -30,10 +30,13 @@ Create a new `.xml.js` or `.xml.ts` file in your Astro pages directory to genera
 
 ```typescript
 // src/pages/atom.xml.js
-import { getAtomResponse } from 'astrojs-atom';
+import atom from 'astrojs-atom';
+
+// Alternatively you can export it explicitly
+// import { getAtomResponse } from 'astrojs-atom';
 
 export function GET(context) {
-  return getAtomResponse({
+  return atom({ // Alternatively: `return getAtomResponse({`
     // Required: Feed metadata
     title: "My Website",
     id: "https://example.com/",
