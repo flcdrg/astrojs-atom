@@ -1,38 +1,38 @@
-name: "Upload release assets to an existing release"
+name: 'Upload release assets to an existing release'
 description: |
   Allows the user to update an existing release
-author: "echapmanFromBunnings"
+author: 'echapmanFromBunnings'
 branding:
-  icon: "archive"
-  color: "green"
+  icon: 'archive'
+  color: 'green'
 inputs:
   releaseTag:
-    description: "Release tag to be updated"
+    description: 'Release tag to be updated'
     required: false
-    default: "${{ github.event.release.tag_name }}"
+    default: '${{ github.event.release.tag_name }}'
   releaseId:
-    description: "Release id to be updated"
+    description: 'Release id to be updated'
     required: false
-    default: "${{ github.event.release.id }}"
+    default: '${{ github.event.release.id }}'
   githubToken:
-    description: "Token for the repository. Can be passed in using {{ secrets.GITHUB_TOKEN }}"
+    description: 'Token for the repository. Can be passed in using {{ secrets.GITHUB_TOKEN }}'
     required: true
     default: ${{ github.token }}
   files:
-    description: "Files to upload to GitHub, must be a multiline result. Glob supported."
+    description: 'Files to upload to GitHub, must be a multiline result. Glob supported.'
     required: false
-    default: ""
+    default: ''
   artefactName:
-    description: "The artefact to download if this is being done within another workflow"
+    description: 'The artefact to download if this is being done within another workflow'
     required: false
-    default: ""
+    default: ''
   overrideExistingArtefact:
-    description: "Override artefact if it already exists. Token will need access to do so"
+    description: 'Override artefact if it already exists. Token will need access to do so'
     required: false
     default: false
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Validate inputs
       run: |
@@ -52,8 +52,8 @@ runs:
       uses: actions/github-script@v6
       env:
         FILES: ${{ inputs.files }}
-        ARTEFACT_NAME_INPUT: "${{ inputs.artefactName }}"
-        OVERRIDE_ARTEFACTS: "${{ inputs.overrideExistingArtefact }}"
+        ARTEFACT_NAME_INPUT: '${{ inputs.artefactName }}'
+        OVERRIDE_ARTEFACTS: '${{ inputs.overrideExistingArtefact }}'
       with:
         github-token: ${{ inputs.githubToken }}
         debug: true

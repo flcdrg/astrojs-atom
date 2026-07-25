@@ -8,12 +8,14 @@ user-invocable: true
 # Atom Spec Compliance
 
 ## When to Use
+
 - Review a change for Atom validator compatibility.
 - Implement or fix Atom feed behavior in schema or serialization code.
 - Investigate issues involving `content`, `summary`, `title`, `rights`, `link`, `author`, `source`, timestamps, namespaces, or response media type.
 - Check whether README examples and tests still match current Atom behavior.
 
 ## Repo Context
+
 - Public API and XML generation live in [src/index.ts](../../../src/index.ts).
 - Validation rules live in [src/schema.ts](../../../src/schema.ts).
 - Default generator metadata lives in [src/generator.ts](../../../src/generator.ts).
@@ -22,6 +24,7 @@ user-invocable: true
 - Test-specific guidance lives in [testing.instructions.md](../../instructions/testing.instructions.md).
 
 ## Procedure
+
 1. Identify whether the change is primarily a schema rule, XML serialization rule, public API change, or a combination.
 2. Read the relevant validator/spec guidance first. Use the checklist in [checklist.md](./references/checklist.md).
 3. Inspect both [src/schema.ts](../../../src/schema.ts) and [src/index.ts](../../../src/index.ts). Do not change one without checking the other.
@@ -31,6 +34,7 @@ user-invocable: true
 7. Run `pnpm test` and `pnpm build` before finishing.
 
 ## Review Checklist
+
 - Does the behavior match Atom validator guidance for the relevant element or construct?
 - Are schema validation and XML serialization consistent with each other?
 - Are public types and runtime behavior aligned?
@@ -38,5 +42,6 @@ user-invocable: true
 - Does README documentation still match the API and output?
 
 ## Output Expectations
+
 - For reviews: list findings first, ordered by severity, with concrete file references.
 - For implementations: summarize the spec requirement, the code change, the tests updated, and any residual compatibility risk.

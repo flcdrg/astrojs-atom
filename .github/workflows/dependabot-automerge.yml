@@ -17,7 +17,7 @@ jobs:
         uses: dependabot/fetch-metadata@v3.1.0
         continue-on-error: true # Handle 'PR is not from Dependabot, nothing to do' error quietly
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
 
       - name: Enable auto-merge for Dependabot PRs
         if: ${{
