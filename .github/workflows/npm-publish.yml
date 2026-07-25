@@ -5,7 +5,7 @@ name: Node.js Package
 
 on:
   release:
-    types: [ published ]
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
         uses: robinraju/release-downloader@v1.13
         with:
           releaseId: ${{ github.event.release.id }}
-          fileName: "*.tgz"
+          fileName: '*.tgz'
 
       - run: |
           echo "pnpm version: $(pnpm --version)"

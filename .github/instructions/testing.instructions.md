@@ -1,6 +1,6 @@
 ---
-description: "Use when adding or changing tests, Atom feed snapshots, validator compliance cases, or serialization assertions. Covers focused Vitest patterns for test/** files and snapshot discipline."
-applyTo: "test/**"
+description: 'Use when adding or changing tests, Atom feed snapshots, validator compliance cases, or serialization assertions. Covers focused Vitest patterns for test/** files and snapshot discipline.'
+applyTo: 'test/**'
 ---
 
 # Testing Guidelines

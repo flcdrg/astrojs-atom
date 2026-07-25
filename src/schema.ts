@@ -5,24 +5,30 @@ const byteLength = z.union([
   z.number().int().nonnegative(),
   z.string().regex(/^\d+$/),
 ]);
-const uriReference = z.string().min(1).refine((value) => {
-  if (/[\u0000-\u001F\u007F\s]/.test(value)) {
-    return false;
-  }
+const uriReference = z
+  .string()
+  .min(1)
+  .refine(
+    (value) => {
+      if (/[\u0000-\u001F\u007F\s]/.test(value)) {
+        return false;
+      }
 
-  if (/^[A-Za-z][A-Za-z\d+.-]*:/.test(value)) {
-    return true;
-  }
+      if (/^[A-Za-z][A-Za-z\d+.-]*:/.test(value)) {
+        return true;
+      }
 
-  try {
-    new URL(value, 'http://example.com');
-    return true;
-  } catch {
-    return false;
-  }
-}, {
-  message: 'Invalid URI reference',
-});
+      try {
+        new URL(value, 'http://example.com');
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    {
+      message: 'Invalid URI reference',
+    }
+  );
 
 // Atom Text Construct (for title, summary, rights, etc.)
 const textConstruct = z.union([
@@ -32,7 +38,7 @@ const textConstruct = z.union([
     value: z.string(),
     /** Content type (optional) */
     type: z.string().optional(),
-  })
+  }),
 ]);
 
 // Atom Person construct
@@ -136,11 +142,7 @@ const externalContent = z.object({
 });
 
 // Atom Content construct
-const content = z.union([
-  z.string(),
-  inlineContent,
-  externalContent,
-]);
+const content = z.union([z.string(), inlineContent, externalContent]);
 
 // Atom Media Thumbnail construct
 const mediaThumbnail = z.object({
@@ -238,28 +240,31 @@ export const atomSchema = atomSchemaBase.superRefine((feed, ctx) => {
   const feedHasAuthor = hasAuthor(feed.author);
 
   feed.entry.forEach((entry, index) => {
-    const entryHasAuthor = feedHasAuthor
-      || hasAuthor(entry.author)
-      || hasAuthor(entry.source?.author);
+    const entryHasAuthor =
+      feedHasAuthor ||
+      hasAuthor(entry.author) ||
+      hasAuthor(entry.source?.author);
 
     if (!entryHasAuthor) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Entry author is required when no feed author or source author is present',
+        message:
+          'Entry author is required when no feed author or source author is present',
         path: ['entry', index, 'author'],
       });
     }
   });
 
   if (!feedHasAuthor) {
-    const allEntriesProvideAuthor = feed.entry.every((entry) =>
-      hasAuthor(entry.author) || hasAuthor(entry.source?.author)
+    const allEntriesProvideAuthor = feed.entry.every(
+      (entry) => hasAuthor(entry.author) || hasAuthor(entry.source?.author)
     );
 
     if (!allEntriesProvideAuthor) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Feed author is required unless every entry provides an author directly or via source',
+        message:
+          'Feed author is required unless every entry provides an author directly or via source',
         path: ['author'],
       });
     }

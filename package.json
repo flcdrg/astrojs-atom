@@ -27,16 +27,24 @@
   "scripts": {
     "build": "pnpm tsc",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint .",
     "test": "vitest",
     "update-version": "node scripts/update-version.js",
     "prepublishOnly": "pnpm update-version && pnpm build",
-    "get-version": "nbgv get-version"
+    "get-version": "nbgv get-version",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts,mjs,cjs,json,md,yml,yaml}": "prettier --write"
   },
   "devDependencies": {
     "@types/node": "25.0.3",
     "@types/xml2js": "^0.4.14",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.2.0",
     "nerdbank-gitversioning": "3.10.91",
+    "prettier": "^3.9.6",
     "ts-node": "^10.9.2",
     "typescript": "^7.0.2",
     "vitest": "^4.0.17",

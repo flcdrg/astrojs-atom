@@ -36,37 +36,38 @@ import atom from 'astrojs-atom';
 // import { getAtomResponse } from 'astrojs-atom';
 
 export function GET(context) {
-  return atom({ // Alternatively: `return getAtomResponse({`
+  return atom({
+    // Alternatively: `return getAtomResponse({`
     // Required: Feed metadata
-    title: "My Website",
-    id: "https://example.com/",
+    title: 'My Website',
+    id: 'https://example.com/',
     updated: new Date().toISOString(),
-    
+
     // Required: Array of feed entries
     entry: [
       {
-        title: "My First Article",
-        id: "https://example.com/blog/first-article",
-        updated: "2023-01-01T00:00:00Z",
+        title: 'My First Article',
+        id: 'https://example.com/blog/first-article',
+        updated: '2023-01-01T00:00:00Z',
         // Optional: content, author, link, etc.
-        content: "This is my first article.",
+        content: 'This is my first article.',
         link: [
-          { href: "https://example.com/blog/first-article", rel: "alternate" }
-        ]
-      }
+          { href: 'https://example.com/blog/first-article', rel: 'alternate' },
+        ],
+      },
     ],
-    
+
     // Optional: Customize the feed with additional properties
-    subtitle: "My Personal Blog",
-    lang: "en-US",
+    subtitle: 'My Personal Blog',
+    lang: 'en-US',
     author: [
-      { 
-        name: "Your Name",
-        email: "you@example.com"
-      }
+      {
+        name: 'Your Name',
+        email: 'you@example.com',
+      },
     ],
     // Add custom stylesheet
-    stylesheet: "/atom-styles.xsl"
+    stylesheet: '/atom-styles.xsl',
   });
 }
 ```
@@ -82,32 +83,32 @@ export function GET(context) {
 
 #### Required Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `title` | `string` or `object` | Title of the feed. Can be a simple string or an object with `value` and `type` attributes |
-| `id` | `string` | Unique identifier for the feed (typically your site URL) |
-| `updated` | `string` | Last updated timestamp (RFC 3339 format) |
-| `entry` | `Array` | Array of feed entries |
+| Property  | Type                 | Description                                                                               |
+| --------- | -------------------- | ----------------------------------------------------------------------------------------- |
+| `title`   | `string` or `object` | Title of the feed. Can be a simple string or an object with `value` and `type` attributes |
+| `id`      | `string`             | Unique identifier for the feed (typically your site URL)                                  |
+| `updated` | `string`             | Last updated timestamp (RFC 3339 format)                                                  |
+| `entry`   | `Array`              | Array of feed entries                                                                     |
 
 #### Optional Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `subtitle` | `string` or `object` | Description or subtitle for the feed as an Atom text construct |
-| `author` | `Array` | Feed authors as an array of person objects |
-| `link` | `Array` | Links related to the feed |
-| `category` | `Array` | Categories for the feed |
-| `contributor` | `Array` | Contributors to the feed |
-| `generator` | `object` | Information about the generator of the feed |
-| `icon` | `string` | URL to an icon for the feed |
-| `logo` | `string` | URL to a logo for the feed |
-| `rights` | `string` or `object` | Copyright information |
-| `lang` | `string` | Language of the feed (sets xml:lang attribute) |
-| `xmlns` | `object` | Custom XML namespaces to include |
-| `stylesheet` | `string` | URL to an XSL stylesheet |
-| `useLegacyXmlContentType` | `boolean` | Makes `getAtomResponse()` use the legacy `application/xml; charset=utf-8` header instead of the default Atom media type |
-| `sortEntriesByUpdated` | `boolean` | When `true`, sorts entries by `updated` descending before serialization. By default, entry order is preserved as provided |
-| `customData` | `string` | Custom XML to include in the feed |
+| Property                  | Type                 | Description                                                                                                               |
+| ------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `subtitle`                | `string` or `object` | Description or subtitle for the feed as an Atom text construct                                                            |
+| `author`                  | `Array`              | Feed authors as an array of person objects                                                                                |
+| `link`                    | `Array`              | Links related to the feed                                                                                                 |
+| `category`                | `Array`              | Categories for the feed                                                                                                   |
+| `contributor`             | `Array`              | Contributors to the feed                                                                                                  |
+| `generator`               | `object`             | Information about the generator of the feed                                                                               |
+| `icon`                    | `string`             | URL to an icon for the feed                                                                                               |
+| `logo`                    | `string`             | URL to a logo for the feed                                                                                                |
+| `rights`                  | `string` or `object` | Copyright information                                                                                                     |
+| `lang`                    | `string`             | Language of the feed (sets xml:lang attribute)                                                                            |
+| `xmlns`                   | `object`             | Custom XML namespaces to include                                                                                          |
+| `stylesheet`              | `string`             | URL to an XSL stylesheet                                                                                                  |
+| `useLegacyXmlContentType` | `boolean`            | Makes `getAtomResponse()` use the legacy `application/xml; charset=utf-8` header instead of the default Atom media type   |
+| `sortEntriesByUpdated`    | `boolean`            | When `true`, sorts entries by `updated` descending before serialization. By default, entry order is preserved as provided |
+| `customData`              | `string`             | Custom XML to include in the feed                                                                                         |
 
 `getAtomResponse()` now returns `Content-Type: application/atom+xml; charset=utf-8` by default. If you need the previous header for compatibility with an existing consumer, set `useLegacyXmlContentType: true`.
 
@@ -119,27 +120,27 @@ Each entry in the `entry` array can have the following properties:
 
 #### Required Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `title` | `string` or `object` | Title of the entry |
-| `id` | `string` | Unique identifier for the entry |
-| `updated` | `string` | Last updated timestamp (RFC 3339 format) |
+| Property  | Type                 | Description                              |
+| --------- | -------------------- | ---------------------------------------- |
+| `title`   | `string` or `object` | Title of the entry                       |
+| `id`      | `string`             | Unique identifier for the entry          |
+| `updated` | `string`             | Last updated timestamp (RFC 3339 format) |
 
 #### Optional Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `author` | `Array` | Entry authors |
-| `content` | `string` or `object` | Full content of the entry. Object content can either provide an inline `value` or an external `src`, plus optional `type` and explicit `base` values |
-| `link` | `Array` | Links related to the entry |
-| `summary` | `string` or `object` | Summary of the entry |
-| `category` | `Array` | Categories for the entry |
-| `contributor` | `Array` | Contributors to the entry |
-| `published` | `string` | Publication date (RFC 3339 format) |
-| `rights` | `string` or `object` | Entry-specific copyright information |
-| `source` | `object` | Source feed information for republished entries. Shared Atom metadata inside `source` uses the same construct handling as the feed, including text constructs for `title`, `subtitle`, and `rights` |
-| `customData` | `string` | Custom XML to include in the entry |
-| `thumbnail` | `object` | Thumbnail image for the entry |
+| Property      | Type                 | Description                                                                                                                                                                                         |
+| ------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `author`      | `Array`              | Entry authors                                                                                                                                                                                       |
+| `content`     | `string` or `object` | Full content of the entry. Object content can either provide an inline `value` or an external `src`, plus optional `type` and explicit `base` values                                                |
+| `link`        | `Array`              | Links related to the entry                                                                                                                                                                          |
+| `summary`     | `string` or `object` | Summary of the entry                                                                                                                                                                                |
+| `category`    | `Array`              | Categories for the entry                                                                                                                                                                            |
+| `contributor` | `Array`              | Contributors to the entry                                                                                                                                                                           |
+| `published`   | `string`             | Publication date (RFC 3339 format)                                                                                                                                                                  |
+| `rights`      | `string` or `object` | Entry-specific copyright information                                                                                                                                                                |
+| `source`      | `object`             | Source feed information for republished entries. Shared Atom metadata inside `source` uses the same construct handling as the feed, including text constructs for `title`, `subtitle`, and `rights` |
+| `customData`  | `string`             | Custom XML to include in the entry                                                                                                                                                                  |
+| `thumbnail`   | `object`             | Thumbnail image for the entry                                                                                                                                                                       |
 
 ## Text Constructs (title, subtitle, summary, rights)
 
@@ -248,15 +249,16 @@ When `src` is present, the content is linked externally and no inline `value` is
 getAtomResponse({
   // ...feed options
   xmlns: {
-    "dc": "http://purl.org/dc/elements/1.1/",
-    "georss": "http://www.georss.org/georss"
+    dc: 'http://purl.org/dc/elements/1.1/',
+    georss: 'http://www.georss.org/georss',
   },
   entry: [
     {
       // ...entry properties
-      customData: '<dc:creator>John Smith</dc:creator><georss:point>45.256 -71.92</georss:point>'
-    }
-  ]
+      customData:
+        '<dc:creator>John Smith</dc:creator><georss:point>45.256 -71.92</georss:point>',
+    },
+  ],
 });
 ```
 
@@ -310,4 +312,7 @@ Atom author requirements are also validated across the whole feed: if the feed h
 `entry.source` metadata is serialized with the same Atom construct mappings as top-level feed metadata, so `source.title`, `source.subtitle`, and `source.rights` support text constructs, while `source.link`, `source.category`, and `source.generator` serialize using Atom attribute/value conventions.
 
 Atom content no longer emits `xml:base` automatically from `entry.id`. If you need `xml:base`, set `content.base` explicitly on object-form content.
-````
+
+```
+
+```
